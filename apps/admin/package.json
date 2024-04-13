@@ -6,8 +6,7 @@
     "build": "next build",
     "dev": "next dev --port 3001",
     "lint": "eslint . --max-warnings 0",
-    "start": "next start --port 3001",
-    "test": "next test"
+    "start": "next start --port 3001"
   },
   "dependencies": {
     "@repo/ui": "workspace:*",
