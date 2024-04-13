@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --port 3001",
     "build": "next build",
-    "start": "next start",
-    "lint": "eslint . --max-warnings 0"
+    "dev": "next dev --port 3001",
+    "lint": "eslint . --max-warnings 0",
+    "start": "next start --port 3001",
+    "test": "next test"
   },
   "dependencies": {
     "@repo/ui": "workspace:*",
