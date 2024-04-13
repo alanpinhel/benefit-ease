@@ -10,7 +10,11 @@
     "test": "next test"
   },
   "dependencies": {
+    "@mantine/colors-generator": "^7.8.0",
+    "@mantine/core": "^7.8.0",
+    "@mantine/hooks": "^7.8.0",
     "@repo/ui": "workspace:*",
+    "chroma-js": "^2.4.2",
     "next": "^14.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
@@ -24,6 +28,9 @@
     "@types/react": "^18.2.61",
     "@types/react-dom": "^18.2.19",
     "eslint": "^8.57.0",
+    "postcss": "^8.4.38",
+    "postcss-preset-mantine": "^1.14.4",
+    "postcss-simple-vars": "^7.0.1",
     "typescript": "^5.3.3"
   }
 }
