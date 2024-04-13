@@ -1,81 +1,69 @@
-# Turborepo starter
+# Benefits Ease
 
-This is an official starter Turborepo.
+Este projeto visa compartilhar meus conhecimentos em desenvolvimento front-end, além de servir como um espaço para prática de novas abordagens, ferramentas e técnicas. A aplicação é um cenário hipotético que envolve o gerenciamento de benefícios de emprego.
 
-## Using this example
+## Pré-requisitos
 
-Run the following command:
+Para começar, certifique-se de ter os seguintes itens instalados:
+
+- [Node.js](package.json#L4)
+- [NPM](package.json#L5)
+- [PNPM](package.json#L6)
+
+## Comandos
+
+#### Instalação
 
 ```sh
-npx create-turbo@latest
+pnpm install
 ```
 
-## What's inside?
+#### Compilação
 
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
+```sh
 pnpm build
 ```
 
-### Develop
+#### Desenvolvimento
 
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
+```sh
 pnpm dev
 ```
 
-### Remote Caching
+#### Testes
 
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
+```sh
+pnpm test
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+#### Uso
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-npx turbo link
+```sh
+pnpm start
 ```
 
-## Useful Links
+## Visão geral
 
-Learn more about the power of Turborepo:
+Este projeto está estruturado nos seguintes diretórios:
 
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+#### `apps/web`
+
+Neste diretório está a aplicação voltada para a perspectiva do usuário dos benefícios. Aqui, é possível:
+
+- Criar uma conta de usuário.
+- Realizar login.
+- Atualizar informações da conta.
+- Excluir a conta.
+- Visualizar o extrato de transações.
+
+#### `apps/admin`
+
+Este diretório abriga a aplicação destinada à visão administrativa dos benefícios. Aqui, é possível:
+
+- Cadastrar novos benefícios.
+- Registrar contas de benefício.
+- Registrar transações.
+
+#### `packages/*`
+
+Os pacotes são concebidos para serem simples e devem ser utilizados somente quando um módulo é compartilhado por duas ou mais aplicações.
