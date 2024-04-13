@@ -30,16 +30,28 @@ pnpm build
 pnpm dev
 ```
 
-#### Testes
+#### Formatação
 
 ```sh
-pnpm test
+pnpm format
+```
+
+#### Lint
+
+```sh
+pnpm lint
 ```
 
 #### Uso
 
 ```sh
 pnpm start
+```
+
+#### Testes
+
+```sh
+pnpm test
 ```
 
 ## Visão geral
