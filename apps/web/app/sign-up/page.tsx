@@ -1,6 +1,6 @@
 "use client";
 
-import { supabase } from "@/lib/supabase";
+import { api } from "@/lib/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Anchor,
@@ -33,22 +33,20 @@ export default function SignUpPage(): JSX.Element {
   });
 
   const onSubmit: SubmitHandler<FormData> = async ({ email, password }) => {
-    const { error } = await supabase.auth.signUp({ email, password });
-
-    if (error) {
+    try {
+      await api.post("/auth/v1/signup", { email, password });
+      notifications.show({
+        color: "green",
+        message: "Agora você já pode acessar a plataforma.",
+        title: "Conta criada com sucesso 🎉",
+      });
+    } catch (error) {
       notifications.show({
         color: "orange",
         message: "Ocorreu um erro ao criar a conta.",
         title: "Erro no servidor 😢",
       });
-      return;
     }
-
-    notifications.show({
-      color: "green",
-      message: "Agora você já pode acessar a plataforma.",
-      title: "Conta criada com sucesso 🎉",
-    });
   };
 
   return (
