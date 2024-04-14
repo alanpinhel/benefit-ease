@@ -8,12 +8,16 @@
  * you don't want to deal with this.
  */
 
+const { performance } = require("node:perf_hooks");
 const { TextDecoder, TextEncoder, ReadableStream } = require("node:util");
+const { clearImmediate } = require("node:timers");
 
 Object.defineProperties(globalThis, {
   TextDecoder: { value: TextDecoder },
   TextEncoder: { value: TextEncoder },
   ReadableStream: { value: ReadableStream },
+  performance: { value: performance },
+  clearImmediate: { value: clearImmediate },
 });
 
 const { Blob, File } = require("node:buffer");
