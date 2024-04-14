@@ -4,5 +4,12 @@
       "mode": "auto"
     }
   ],
-  "cSpell.words": ["latin", "supabase"]
+  "cSpell.words": [
+    "apikey",
+    "hookform",
+    "latin",
+    "signup",
+    "supabase",
+    "undici"
+  ]
 }

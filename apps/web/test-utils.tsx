@@ -1,4 +1,5 @@
 import { MantineProvider } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
 import {
   RenderResult,
   render as testingLibraryRender,
@@ -9,7 +10,10 @@ import { theme } from "./theme";
 function render(ui: React.ReactNode): RenderResult {
   return testingLibraryRender(<>{ui}</>, {
     wrapper: ({ children }: { children: React.ReactNode }) => (
-      <MantineProvider theme={theme}>{children}</MantineProvider>
+      <MantineProvider theme={theme}>
+        <Notifications />
+        {children}
+      </MantineProvider>
     ),
   });
 }

@@ -11,20 +11,27 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.3.4",
     "@mantine/colors-generator": "^7.8.0",
     "@mantine/core": "^7.8.0",
     "@mantine/hooks": "^7.8.0",
+    "@mantine/notifications": "^7.8.0",
     "@repo/ui": "workspace:*",
     "@supabase/supabase-js": "^2.42.3",
+    "axios": "^1.6.8",
     "chroma-js": "^2.4.2",
     "next": "^14.1.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.51.3",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^14.1.1",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@swc/core": "^1.4.13",
+    "@swc/jest": "^0.2.36",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^15.0.2",
     "@testing-library/user-event": "^14.5.2",
@@ -36,9 +43,11 @@
     "eslint": "^8.57.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
+    "msw": "^2.2.13",
     "postcss": "^8.4.38",
     "postcss-preset-mantine": "^1.14.4",
     "postcss-simple-vars": "^7.0.1",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "undici": "^5.22.0"
   }
 }
