@@ -1,5 +1,7 @@
 import { ColorSchemeScript, Container, MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
+import { Notifications } from "@mantine/notifications";
+import "@mantine/notifications/styles.css";
 import { theme } from "../theme";
 
 export const metadata = {
@@ -23,6 +25,7 @@ export default function RootLayout({
       </head>
       <body>
         <MantineProvider defaultColorScheme="auto" theme={theme}>
+          <Notifications />
           <Container
             component="main"
             maw={430}

@@ -11,6 +11,7 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import Link from "next/link";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -31,8 +32,23 @@ export default function SignUpPage(): JSX.Element {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit: SubmitHandler<FormData> = ({ email, password }) => {
-    supabase.auth.signUp({ email, password });
+  const onSubmit: SubmitHandler<FormData> = async ({ email, password }) => {
+    const { error } = await supabase.auth.signUp({ email, password });
+
+    if (error) {
+      notifications.show({
+        color: "orange",
+        message: "Ocorreu um erro ao criar a conta.",
+        title: "Erro no servidor 😢",
+      });
+      return;
+    }
+
+    notifications.show({
+      color: "green",
+      message: "Agora você já pode acessar a plataforma.",
+      title: "Conta criada com sucesso 🎉",
+    });
   };
 
   return (
@@ -41,39 +57,41 @@ export default function SignUpPage(): JSX.Element {
 
       <Title ta="center">Crie sua conta</Title>
 
-      <Stack component="form" gap={24} onSubmit={handleSubmit(onSubmit)}>
-        <Stack>
-          <TextInput
-            formNoValidate
-            error={errors.email?.message}
-            label="E-mail"
-            placeholder="Seu e-mail profissional"
-            size="md"
-            type="email"
-            {...register("email")}
-          />
-          <TextInput
-            formNoValidate
-            error={errors.password?.message}
-            label="Senha"
-            placeholder="Crie uma nova senha"
-            size="md"
-            type="password"
-            {...register("password")}
-          />
+      <form noValidate onSubmit={handleSubmit(onSubmit)}>
+        <Stack gap={24}>
+          <Stack>
+            <TextInput
+              required
+              error={errors.email?.message}
+              label="E-mail"
+              placeholder="Seu melhor e-mail"
+              size="md"
+              type="email"
+              {...register("email")}
+            />
+            <TextInput
+              required
+              error={errors.password?.message}
+              label="Senha"
+              placeholder="Crie uma nova senha"
+              size="md"
+              type="password"
+              {...register("password")}
+            />
+          </Stack>
+
+          <Button type="submit" size="md">
+            Criar conta
+          </Button>
+
+          <Text c="dimmed" ta="center">
+            Já tem uma conta?{" "}
+            <Anchor component={Link} href="/login">
+              Entrar
+            </Anchor>
+          </Text>
         </Stack>
-
-        <Button type="submit" size="md">
-          Criar conta
-        </Button>
-
-        <Text c="dimmed" ta="center">
-          Já tem uma conta?{" "}
-          <Anchor component={Link} href="/login">
-            Entrar
-          </Anchor>
-        </Text>
-      </Stack>
+      </form>
     </Stack>
   );
 }
