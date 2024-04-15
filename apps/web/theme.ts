@@ -11,7 +11,7 @@ import { Urbanist } from "next/font/google";
 
 const urbanist = Urbanist({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "600", "700"],
 });
 
 export const theme: MantineThemeOverride = createTheme({

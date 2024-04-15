@@ -12,6 +12,7 @@ import {
   Title,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
+import axios from "axios";
 import Link from "next/link";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -23,7 +24,7 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export default function SignUpPage(): JSX.Element {
+export default function LoginPage(): JSX.Element {
   const {
     register,
     handleSubmit,
@@ -34,26 +35,41 @@ export default function SignUpPage(): JSX.Element {
 
   const onSubmit: SubmitHandler<FormData> = async ({ email, password }) => {
     try {
-      await api.post("/auth/v1/signup", { email, password });
+      await api.post("/auth/v1/token?grant_type=password", { email, password });
       notifications.show({
         color: "green",
-        message: `Confirme sua conta clicando no link enviado para o seu e-mail.`,
-        title: "Conta criada com sucesso 🎉",
+        message: "Agora você já pode utilizar a plataforma.",
+        title: "Boas-vindas de volta 🎉",
       });
     } catch (error) {
-      notifications.show({
-        color: "orange",
-        message: "Ocorreu um erro ao criar a conta.",
-        title: "Erro no servidor 😢",
-      });
+      if (!axios.isAxiosError(error)) {
+        throw error;
+      }
+
+      switch (error.response?.status) {
+        case 400:
+          notifications.show({
+            color: "red",
+            message: "Credenciais inválidas.",
+            title: "Erro de autenticação 😢",
+          });
+          break;
+
+        default:
+          notifications.show({
+            color: "orange",
+            message: "Ocorreu um erro ao criar a conta.",
+            title: "Erro no servidor 😢",
+          });
+      }
     }
   };
 
   return (
     <Stack gap={32}>
-      <Image src="/sign-up.svg" alt="" aria-hidden />
+      <Image src="/login.svg" alt="" aria-hidden />
 
-      <Title ta="center">Crie sua conta</Title>
+      <Title ta="center">Entre</Title>
 
       <form noValidate onSubmit={handleSubmit(onSubmit)}>
         <Stack gap={24}>
@@ -62,7 +78,7 @@ export default function SignUpPage(): JSX.Element {
               required
               error={errors.email?.message}
               label="E-mail"
-              placeholder="Seu melhor e-mail"
+              placeholder="E-mail utilizado no cadastro"
               size="md"
               type="email"
               {...register("email")}
@@ -71,7 +87,7 @@ export default function SignUpPage(): JSX.Element {
               required
               error={errors.password?.message}
               label="Senha"
-              placeholder="Crie uma nova senha"
+              placeholder="Senha utilizada no cadastro"
               size="md"
               type="password"
               {...register("password")}
@@ -79,13 +95,13 @@ export default function SignUpPage(): JSX.Element {
           </Stack>
 
           <Button type="submit" size="md">
-            Criar conta
+            Entrar
           </Button>
 
           <Text c="dimmed" ta="center">
-            Já tem uma conta?{" "}
-            <Anchor component={Link} href="/login">
-              Entrar
+            Ainda não tem uma conta?{" "}
+            <Anchor component={Link} href="/sign-up">
+              Cadastrar
             </Anchor>
           </Text>
         </Stack>
