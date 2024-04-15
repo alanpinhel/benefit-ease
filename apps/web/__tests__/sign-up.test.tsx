@@ -1,7 +1,6 @@
 import SignUpPage from "@/app/sign-up/page";
 import { server } from "@/mocks/node";
 import { fireEvent, render, screen } from "@/test-utils";
-import "@testing-library/jest-dom";
 import { http } from "msw";
 
 function renderSignUpPage() {

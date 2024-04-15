@@ -37,7 +37,7 @@ export default function SignUpPage(): JSX.Element {
       await api.post("/auth/v1/signup", { email, password });
       notifications.show({
         color: "green",
-        message: "Agora você já pode acessar a plataforma.",
+        message: `Confirme sua conta clicando no link enviado para o seu e-mail.`,
         title: "Conta criada com sucesso 🎉",
       });
     } catch (error) {
