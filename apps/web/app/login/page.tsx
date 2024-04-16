@@ -14,26 +14,14 @@ import {
 import { notifications } from "@mantine/notifications";
 import axios from "axios";
 import Link from "next/link";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useCallback } from "react";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const schema = z.object({
-  email: z.string().email({ message: "E-mail inválido." }),
-  password: z.string().min(6, { message: "Mínimo de 6 caracteres." }),
-});
+type Credentials = z.infer<typeof schema>;
 
-type FormData = z.infer<typeof schema>;
-
-export default function LoginPage(): JSX.Element {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  });
-
-  const onSubmit: SubmitHandler<FormData> = async ({ email, password }) => {
+function useSignIn() {
+  const signIn = useCallback(async ({ email, password }: Credentials) => {
     try {
       await api.post("/auth/v1/token?grant_type=password", { email, password });
       notifications.show({
@@ -63,7 +51,25 @@ export default function LoginPage(): JSX.Element {
           });
       }
     }
-  };
+  }, []);
+
+  return { signIn };
+}
+
+const schema = z.object({
+  email: z.string().email({ message: "E-mail inválido." }),
+  password: z.string().min(6, { message: "Mínimo de 6 caracteres." }),
+});
+
+export default function LoginPage(): JSX.Element {
+  const { signIn } = useSignIn();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Credentials>({
+    resolver: zodResolver(schema),
+  });
 
   return (
     <Stack gap={32}>
@@ -71,7 +77,7 @@ export default function LoginPage(): JSX.Element {
 
       <Title ta="center">Entre</Title>
 
-      <form noValidate onSubmit={handleSubmit(onSubmit)}>
+      <form noValidate onSubmit={handleSubmit(signIn)}>
         <Stack gap={24}>
           <Stack>
             <TextInput
