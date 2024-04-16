@@ -1,21 +1,14 @@
 "use client";
 
-import { api } from "@/lib/api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Anchor,
-  Button,
-  Image,
-  Stack,
-  Text,
-  TextInput,
-  Title,
-} from "@mantine/core";
-import { notifications } from "@mantine/notifications";
-import axios from "axios";
+import { Anchor, Button, Stack, Text, TextInput, Title } from "@mantine/core";
+import Image from "next/image";
 import Link from "next/link";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
+import { signIn, useAuth } from "../auth-context";
+import { withoutAuth } from "../without-auth";
+import loginImage from "./login.svg";
 
 const schema = z.object({
   email: z.string().email({ message: "E-mail inválido." }),
@@ -24,7 +17,8 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export default function LoginPage(): JSX.Element {
+function LoginPage() {
+  const [{ isSigningIn }, authDispatch] = useAuth();
   const {
     register,
     handleSubmit,
@@ -33,41 +27,18 @@ export default function LoginPage(): JSX.Element {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit: SubmitHandler<FormData> = async ({ email, password }) => {
-    try {
-      await api.post("/auth/v1/token?grant_type=password", { email, password });
-      notifications.show({
-        color: "green",
-        message: "Agora você já pode utilizar a plataforma.",
-        title: "Boas-vindas de volta 🎉",
-      });
-    } catch (error) {
-      if (!axios.isAxiosError(error)) {
-        throw error;
-      }
-
-      switch (error.response?.status) {
-        case 400:
-          notifications.show({
-            color: "red",
-            message: "Credenciais inválidas.",
-            title: "Erro de autenticação 😢",
-          });
-          break;
-
-        default:
-          notifications.show({
-            color: "orange",
-            message: "Ocorreu um erro ao criar a conta.",
-            title: "Erro no servidor 😢",
-          });
-      }
-    }
+  const onSubmit: SubmitHandler<FormData> = (data) => {
+    signIn(authDispatch, data);
   };
 
   return (
     <Stack gap={32}>
-      <Image src="/login.svg" alt="" aria-hidden />
+      <Image
+        aria-hidden
+        alt=""
+        src={loginImage}
+        style={{ marginInline: "auto", width: "90%", height: "auto" }}
+      />
 
       <Title ta="center">Entre</Title>
 
@@ -94,7 +65,7 @@ export default function LoginPage(): JSX.Element {
             />
           </Stack>
 
-          <Button type="submit" size="md">
+          <Button type="submit" size="md" loading={isSigningIn}>
             Entrar
           </Button>
 
@@ -109,3 +80,5 @@ export default function LoginPage(): JSX.Element {
     </Stack>
   );
 }
+
+export default withoutAuth(LoginPage);

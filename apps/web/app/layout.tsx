@@ -3,6 +3,7 @@ import "@mantine/core/styles.css";
 import { Notifications } from "@mantine/notifications";
 import "@mantine/notifications/styles.css";
 import { theme } from "../theme";
+import { AuthProvider } from "./auth-context";
 
 export const metadata = {
   title: "BenefitEase",
@@ -34,7 +35,7 @@ export default function RootLayout({
             px={24}
             size="xs"
           >
-            {children}
+            <AuthProvider>{children}</AuthProvider>
           </Container>
         </MantineProvider>
       </body>
