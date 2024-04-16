@@ -5,6 +5,7 @@ import {
   render as testingLibraryRender,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { AuthProvider } from "./app/auth-context";
 import { theme } from "./theme";
 
 function render(ui: React.ReactNode): RenderResult {
@@ -12,7 +13,7 @@ function render(ui: React.ReactNode): RenderResult {
     wrapper: ({ children }: { children: React.ReactNode }) => (
       <MantineProvider theme={theme}>
         <Notifications />
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </MantineProvider>
     ),
   });
