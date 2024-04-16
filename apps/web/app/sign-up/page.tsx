@@ -1,14 +1,15 @@
 "use client";
 
-import { api } from "@/lib/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Anchor, Button, Stack, Text, TextInput, Title } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
 import Image from "next/image";
 import Link from "next/link";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
+import { signUp, useAuth } from "../auth-context";
+import { withoutAuth } from "../without-auth";
 import signUpImage from "./sign-up.svg";
+import signedUpImage from "./signed-up.svg";
 
 const schema = z.object({
   email: z.string().email({ message: "E-mail inválido." }),
@@ -17,7 +18,8 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export default function SignUpPage(): JSX.Element {
+function SignUpPage(): JSX.Element {
+  const [{ isSigningUp, isSignedUp }, authDispatch] = useAuth();
   const {
     register,
     handleSubmit,
@@ -26,22 +28,30 @@ export default function SignUpPage(): JSX.Element {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit: SubmitHandler<FormData> = async ({ email, password }) => {
-    try {
-      await api.post("/auth/v1/signup", { email, password });
-      notifications.show({
-        color: "green",
-        message: `Confirme sua conta clicando no link enviado para o seu e-mail.`,
-        title: "Conta criada com sucesso 🎉",
-      });
-    } catch (error) {
-      notifications.show({
-        color: "orange",
-        message: "Ocorreu um erro ao criar a conta.",
-        title: "Erro no servidor 😢",
-      });
-    }
+  const onSubmit: SubmitHandler<FormData> = (data) => {
+    signUp(authDispatch, data);
   };
+
+  if (isSignedUp) {
+    return (
+      <Stack gap={0}>
+        <Image
+          aria-hidden
+          alt=""
+          src={signedUpImage}
+          style={{ marginInline: "auto", width: "90%", height: "auto" }}
+        />
+        <Stack>
+          <Title ta="center" order={4}>
+            Conta criada com sucesso 🎉
+          </Title>
+          <Text fz="md" ta="center">
+            Confirme sua conta clicando no link enviado para o seu e-mail.
+          </Text>
+        </Stack>
+      </Stack>
+    );
+  }
 
   return (
     <Stack gap={32}>
@@ -77,7 +87,7 @@ export default function SignUpPage(): JSX.Element {
             />
           </Stack>
 
-          <Button type="submit" size="md">
+          <Button type="submit" size="md" loading={isSigningUp}>
             Criar conta
           </Button>
 
@@ -92,3 +102,5 @@ export default function SignUpPage(): JSX.Element {
     </Stack>
   );
 }
+
+export default withoutAuth(SignUpPage);

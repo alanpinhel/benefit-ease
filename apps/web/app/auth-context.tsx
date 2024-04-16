@@ -8,18 +8,39 @@ import { createContext, useContext, useReducer } from "react";
 
 type Credentials = { email: string; password: string };
 type Action = {
-  type: "start sign in" | "finished sign in" | "fail sign in" | "sign out";
+  type:
+    | "start sign up"
+    | "finished sign up"
+    | "fail sign up"
+    | "start sign in"
+    | "finished sign in"
+    | "fail sign in"
+    | "sign out";
 };
 type Dispatch = (action: Action) => void;
-type State = { isAuth: boolean; isSigningIn: boolean };
+type State = {
+  isAuth: boolean;
+  isSigningUp: boolean;
+  isSigningIn: boolean;
+  isSignedUp: boolean;
+};
 type AuthProviderProps = { children: React.ReactNode };
 type AuthContextValue = [state: State, dispatch: Dispatch];
 type SignInResponse = { access_token: string };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-function authReducer(state: State, action: Action) {
+function authReducer(state: State, action: Action): State {
   switch (action.type) {
+    case "start sign up": {
+      return { ...state, isSigningUp: true };
+    }
+    case "finished sign up": {
+      return { ...state, isSigningUp: false, isSignedUp: true };
+    }
+    case "fail sign up": {
+      return { ...state, isSigningUp: false };
+    }
     case "start sign in": {
       return { ...state, isSigningIn: true };
     }
@@ -35,6 +56,21 @@ function authReducer(state: State, action: Action) {
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);
     }
+  }
+}
+
+async function signUp(authDispatch: Dispatch, credentials: Credentials) {
+  try {
+    authDispatch({ type: "start sign up" });
+    await api.post("/auth/v1/signup", credentials);
+    authDispatch({ type: "finished sign up" });
+  } catch (error) {
+    authDispatch({ type: "fail sign up" });
+    notifications.show({
+      color: "orange",
+      message: "Ocorreu um erro ao criar a conta.",
+      title: "Erro no servidor 😢",
+    });
   }
 }
 
@@ -84,6 +120,8 @@ function AuthProvider({ children }: AuthProviderProps) {
   const value = useReducer(authReducer, {
     isAuth: !!cookies.get("access_token"),
     isSigningIn: false,
+    isSigningUp: false,
+    isSignedUp: false,
   });
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
@@ -96,4 +134,4 @@ function useAuth() {
   return context;
 }
 
-export { AuthProvider, signIn, signOut, useAuth };
+export { AuthProvider, signIn, signOut, signUp, useAuth };

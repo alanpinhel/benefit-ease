@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Anchor, Button, Stack, Text, TextInput, Title } from "@mantine/core";
 import Image from "next/image";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { signIn, useAuth } from "../auth-context";
 import { withoutAuth } from "../without-auth";
@@ -27,7 +27,9 @@ function LoginPage() {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data: FormData) => signIn(authDispatch, data);
+  const onSubmit: SubmitHandler<FormData> = (data) => {
+    signIn(authDispatch, data);
+  };
 
   return (
     <Stack gap={32}>
