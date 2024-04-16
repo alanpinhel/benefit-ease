@@ -14,6 +14,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { signIn, useAuth } from "../auth-context";
+import { withoutAuth } from "../without-auth";
 
 const schema = z.object({
   email: z.string().email({ message: "E-mail inválido." }),
@@ -22,8 +23,8 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export default function LoginPage(): JSX.Element {
-  const [, authDispatch] = useAuth();
+function LoginPage() {
+  const [{ isSigningIn }, authDispatch] = useAuth();
   const {
     register,
     handleSubmit,
@@ -63,7 +64,7 @@ export default function LoginPage(): JSX.Element {
             />
           </Stack>
 
-          <Button type="submit" size="md">
+          <Button type="submit" size="md" loading={isSigningIn}>
             Entrar
           </Button>
 
@@ -78,3 +79,5 @@ export default function LoginPage(): JSX.Element {
     </Stack>
   );
 }
+
+export default withoutAuth(LoginPage);

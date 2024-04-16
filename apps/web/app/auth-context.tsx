@@ -7,9 +7,9 @@ import axios from "axios";
 import { createContext, useContext, useReducer } from "react";
 
 type Credentials = { email: string; password: string };
-type Action = { type: "finished sign in" };
+type Action = { type: "start sign in" | "finished sign in" | "fail sign in" };
 type Dispatch = (action: Action) => void;
-type State = { isAuth: boolean };
+type State = { isAuth: boolean; isSigningIn: boolean };
 type AuthProviderProps = { children: React.ReactNode };
 type AuthContextValue = [state: State, dispatch: Dispatch];
 type SignInResponse = { access_token: string };
@@ -18,8 +18,14 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 function authReducer(state: State, action: Action) {
   switch (action.type) {
+    case "start sign in": {
+      return { ...state, isSigningIn: true };
+    }
     case "finished sign in": {
-      return { ...state, isAuth: true };
+      return { ...state, isAuth: true, isSigningIn: false };
+    }
+    case "fail sign in": {
+      return { ...state, isSigningIn: false };
     }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);
@@ -29,6 +35,7 @@ function authReducer(state: State, action: Action) {
 
 async function signIn(authDispatch: Dispatch, credentials: Credentials) {
   try {
+    authDispatch({ type: "start sign in" });
     const { data } = await api.post<SignInResponse>(
       "/auth/v1/token?grant_type=password",
       credentials
@@ -65,6 +72,7 @@ async function signIn(authDispatch: Dispatch, credentials: Credentials) {
 function AuthProvider({ children }: AuthProviderProps) {
   const value = useReducer(authReducer, {
     isAuth: !!cookies.get("access_token"),
+    isSigningIn: false,
   });
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
