@@ -1,20 +1,14 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Anchor,
-  Button,
-  Image,
-  Stack,
-  Text,
-  TextInput,
-  Title,
-} from "@mantine/core";
+import { Anchor, Button, Stack, Text, TextInput, Title } from "@mantine/core";
+import Image from "next/image";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { signIn, useAuth } from "../auth-context";
 import { withoutAuth } from "../without-auth";
+import loginImage from "./login.svg";
 
 const schema = z.object({
   email: z.string().email({ message: "E-mail inválido." }),
@@ -37,7 +31,12 @@ function LoginPage() {
 
   return (
     <Stack gap={32}>
-      <Image src="/login.svg" alt="" aria-hidden />
+      <Image
+        aria-hidden
+        alt=""
+        src={loginImage}
+        style={{ marginInline: "auto", width: "90%", height: "auto" }}
+      />
 
       <Title ta="center">Entre</Title>
 

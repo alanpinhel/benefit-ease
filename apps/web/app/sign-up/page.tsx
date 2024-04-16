@@ -2,19 +2,13 @@
 
 import { api } from "@/lib/api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Anchor,
-  Button,
-  Image,
-  Stack,
-  Text,
-  TextInput,
-  Title,
-} from "@mantine/core";
+import { Anchor, Button, Stack, Text, TextInput, Title } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
+import Image from "next/image";
 import Link from "next/link";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
+import signUpImage from "./sign-up.svg";
 
 const schema = z.object({
   email: z.string().email({ message: "E-mail inválido." }),
@@ -51,7 +45,12 @@ export default function SignUpPage(): JSX.Element {
 
   return (
     <Stack gap={32}>
-      <Image src="/sign-up.svg" alt="" aria-hidden />
+      <Image
+        aria-hidden
+        alt=""
+        src={signUpImage}
+        style={{ marginInline: "auto", width: "90%", height: "auto" }}
+      />
 
       <Title ta="center">Crie sua conta</Title>
 
