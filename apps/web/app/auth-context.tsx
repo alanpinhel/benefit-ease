@@ -7,7 +7,9 @@ import axios from "axios";
 import { createContext, useContext, useReducer } from "react";
 
 type Credentials = { email: string; password: string };
-type Action = { type: "start sign in" | "finished sign in" | "fail sign in" };
+type Action = {
+  type: "start sign in" | "finished sign in" | "fail sign in" | "sign out";
+};
 type Dispatch = (action: Action) => void;
 type State = { isAuth: boolean; isSigningIn: boolean };
 type AuthProviderProps = { children: React.ReactNode };
@@ -26,6 +28,9 @@ function authReducer(state: State, action: Action) {
     }
     case "fail sign in": {
       return { ...state, isSigningIn: false };
+    }
+    case "sign out": {
+      return { ...state, isAuth: false };
     }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);
@@ -48,6 +53,7 @@ async function signIn(authDispatch: Dispatch, credentials: Credentials) {
     cookies.set("access_token", data.access_token);
     authDispatch({ type: "finished sign in" });
   } catch (error) {
+    authDispatch({ type: "fail sign in" });
     if (!axios.isAxiosError(error)) {
       throw error;
     }
@@ -69,6 +75,11 @@ async function signIn(authDispatch: Dispatch, credentials: Credentials) {
   }
 }
 
+function signOut(authDispatch: Dispatch) {
+  cookies.remove("access_token");
+  authDispatch({ type: "sign out" });
+}
+
 function AuthProvider({ children }: AuthProviderProps) {
   const value = useReducer(authReducer, {
     isAuth: !!cookies.get("access_token"),
@@ -85,4 +96,4 @@ function useAuth() {
   return context;
 }
 
-export { AuthProvider, signIn, useAuth };
+export { AuthProvider, signIn, signOut, useAuth };
