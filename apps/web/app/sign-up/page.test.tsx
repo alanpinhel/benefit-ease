@@ -7,6 +7,11 @@ function renderSignUpPage() {
   render(<SignUpPage />);
 
   return {
+    changeName(value: string) {
+      fireEvent.input(screen.getByLabelText(/nome/i), {
+        target: { value },
+      });
+    },
     changeEmail(value: string) {
       fireEvent.input(screen.getByLabelText(/e-mail/i), {
         target: { value },
@@ -24,13 +29,18 @@ function renderSignUpPage() {
 }
 
 test("shows error message when submitting with invalid filling", async () => {
-  const { changeEmail, changePassword, submitForm } = renderSignUpPage();
+  const { changeName, changeEmail, changePassword, submitForm } =
+    renderSignUpPage();
 
+  changeName("f");
   changeEmail("invalid-email");
   changePassword("123");
   submitForm();
 
-  expect(await screen.findByText(/e-mail inválido/i)).toBeInTheDocument();
+  expect(
+    await screen.findByText(/mínimo de 2 caracteres/i)
+  ).toBeInTheDocument();
+  expect(screen.getByText(/e-mail inválido/i)).toBeInTheDocument();
   expect(screen.getByText(/mínimo de 6 caracteres/i)).toBeInTheDocument();
 });
 
@@ -41,8 +51,10 @@ test("shows notification when server responds with error", async () => {
     )
   );
 
-  const { changeEmail, changePassword, submitForm } = renderSignUpPage();
+  const { changeName, changeEmail, changePassword, submitForm } =
+    renderSignUpPage();
 
+  changeName("Bob");
   changeEmail("not-allowed@email.com");
   changePassword("password123");
   submitForm();
@@ -51,8 +63,10 @@ test("shows notification when server responds with error", async () => {
 });
 
 test("shows notification when everything goes well", async () => {
-  const { changeEmail, changePassword, submitForm } = renderSignUpPage();
+  const { changeName, changeEmail, changePassword, submitForm } =
+    renderSignUpPage();
 
+  changeName("Bob");
   changeEmail("email@email.com");
   changePassword("password123");
   submitForm();
