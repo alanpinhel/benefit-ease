@@ -1,7 +1,15 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Anchor, Button, Stack, Text, TextInput, Title } from "@mantine/core";
+import {
+  Anchor,
+  Button,
+  PasswordInput,
+  Stack,
+  Text,
+  TextInput,
+  Title,
+} from "@mantine/core";
 import Image from "next/image";
 import Link from "next/link";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -12,7 +20,7 @@ import signUpImage from "./sign-up.svg";
 import signedUpImage from "./signed-up.svg";
 
 const schema = z.object({
-  name: z.string().min(2, { message: "Mínimo de 2 caracteres." }),
+  display_name: z.string().min(2, { message: "Mínimo de 2 caracteres." }),
   email: z.string().email({ message: "E-mail inválido." }),
   password: z.string().min(6, { message: "Mínimo de 6 caracteres." }),
 });
@@ -70,12 +78,12 @@ function SignUpPage(): JSX.Element {
           <Stack>
             <TextInput
               required
-              error={errors.name?.message}
+              error={errors.display_name?.message}
               label="Nome"
               placeholder="Nome de preferência"
               size="md"
               type="text"
-              {...register("name")}
+              {...register("display_name")}
             />
             <TextInput
               required
@@ -86,7 +94,7 @@ function SignUpPage(): JSX.Element {
               type="email"
               {...register("email")}
             />
-            <TextInput
+            <PasswordInput
               required
               error={errors.password?.message}
               label="Senha"
