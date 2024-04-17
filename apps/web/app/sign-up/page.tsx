@@ -12,6 +12,7 @@ import signUpImage from "./sign-up.svg";
 import signedUpImage from "./signed-up.svg";
 
 const schema = z.object({
+  name: z.string().min(2, { message: "Mínimo de 2 caracteres." }),
   email: z.string().email({ message: "E-mail inválido." }),
   password: z.string().min(6, { message: "Mínimo de 6 caracteres." }),
 });
@@ -69,9 +70,18 @@ function SignUpPage(): JSX.Element {
           <Stack>
             <TextInput
               required
+              error={errors.name?.message}
+              label="Nome"
+              placeholder="Nome de preferência"
+              size="md"
+              type="text"
+              {...register("name")}
+            />
+            <TextInput
+              required
               error={errors.email?.message}
               label="E-mail"
-              placeholder="Seu melhor e-mail"
+              placeholder="Seu e-mail de fácil acesso"
               size="md"
               type="email"
               {...register("email")}

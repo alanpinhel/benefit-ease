@@ -59,10 +59,17 @@ function authReducer(state: State, action: Action): State {
   }
 }
 
-async function signUp(authDispatch: Dispatch, credentials: Credentials) {
+async function signUp(
+  authDispatch: Dispatch,
+  credentials: Credentials & { name: string }
+) {
   try {
     authDispatch({ type: "start sign up" });
-    await api.post("/auth/v1/signup", credentials);
+    await api.post("/auth/v1/signup", {
+      email: credentials.email,
+      password: credentials.password,
+      data: { display_name: credentials.name },
+    });
     authDispatch({ type: "finished sign up" });
   } catch (error) {
     authDispatch({ type: "fail sign up" });
@@ -87,6 +94,7 @@ async function signIn(authDispatch: Dispatch, credentials: Credentials) {
       title: "Boas-vindas de volta 🎉",
     });
     cookies.set("access_token", data.access_token);
+    api.defaults.headers.Authorization = `Bearer ${data.access_token}`;
     authDispatch({ type: "finished sign in" });
   } catch (error) {
     authDispatch({ type: "fail sign in" });
