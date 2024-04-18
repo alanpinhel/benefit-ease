@@ -1,5 +1,6 @@
 "use client";
 
+import { api } from "@/lib/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Anchor,
@@ -10,11 +11,12 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import Image from "next/image";
 import Link from "next/link";
+import { useReducer } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { signUp, useAuth } from "../auth-context";
 import { withoutAuth } from "../without-auth";
 import signUpImage from "./sign-up.svg";
 import signedUpImage from "./signed-up.svg";
@@ -27,8 +29,56 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
+type Action = {
+  type: "start sign up" | "finished sign up" | "fail sign up";
+};
+
+type Dispatch = (action: Action) => void;
+
+async function signUp(dispatch: Dispatch, user: FormData) {
+  try {
+    dispatch({ type: "start sign up" });
+    await api.post("/auth/v1/signup", {
+      email: user.email,
+      password: user.password,
+      data: { display_name: user.display_name },
+    });
+    dispatch({ type: "finished sign up" });
+  } catch (error) {
+    dispatch({ type: "fail sign up" });
+    notifications.show({
+      color: "orange",
+      message: "Ocorreu um erro ao criar a conta.",
+      title: "Erro no servidor 😢",
+    });
+  }
+}
+
+type State = { isSigningUp: boolean; isSignedUp: boolean };
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case "start sign up": {
+      return { ...state, isSigningUp: true };
+    }
+    case "finished sign up": {
+      return { ...state, isSigningUp: false, isSignedUp: true };
+    }
+    case "fail sign up": {
+      return { ...state, isSigningUp: false };
+    }
+    default: {
+      throw new Error(`Unhandled action type: ${action.type}`);
+    }
+  }
+}
+
 function SignUpPage(): JSX.Element {
-  const [{ isSigningUp, isSignedUp }, authDispatch] = useAuth();
+  const [{ isSignedUp, isSigningUp }, dispatch] = useReducer(reducer, {
+    isSigningUp: false,
+    isSignedUp: false,
+  });
+
   const {
     register,
     handleSubmit,
@@ -38,7 +88,7 @@ function SignUpPage(): JSX.Element {
   });
 
   const onSubmit: SubmitHandler<FormData> = (data) => {
-    signUp(authDispatch, data);
+    signUp(dispatch, data);
   };
 
   if (isSignedUp) {
@@ -70,9 +120,7 @@ function SignUpPage(): JSX.Element {
         src={signUpImage}
         style={{ marginInline: "auto", width: "90%", height: "auto" }}
       />
-
       <Title ta="center">Crie sua conta</Title>
-
       <form noValidate onSubmit={handleSubmit(onSubmit)}>
         <Stack gap={24}>
           <Stack>

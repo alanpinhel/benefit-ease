@@ -10,9 +10,6 @@ type Credentials = { email: string; password: string };
 type User = { email: string; display_name: string };
 type Action = {
   type:
-    | "start sign up"
-    | "finished sign up"
-    | "fail sign up"
     | "start sign in"
     | "finished sign in"
     | "fail sign in"
@@ -25,9 +22,7 @@ type Action = {
 type Dispatch = (action: Action) => void;
 type State = {
   isAuth: boolean;
-  isSignedUp: boolean;
   isSigningIn: boolean;
-  isSigningUp: boolean;
   isUpdatingUser: boolean;
   user?: User;
 };
@@ -47,15 +42,6 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 function authReducer(state: State, action: Action): State {
   switch (action.type) {
-    case "start sign up": {
-      return { ...state, isSigningUp: true };
-    }
-    case "finished sign up": {
-      return { ...state, isSigningUp: false, isSignedUp: true };
-    }
-    case "fail sign up": {
-      return { ...state, isSigningUp: false };
-    }
     case "start sign in": {
       return { ...state, isSigningIn: true };
     }
@@ -80,25 +66,6 @@ function authReducer(state: State, action: Action): State {
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);
     }
-  }
-}
-
-export async function signUp(authDispatch: Dispatch, user: Credentials & User) {
-  try {
-    authDispatch({ type: "start sign up" });
-    await api.post("/auth/v1/signup", {
-      email: user.email,
-      password: user.password,
-      data: { display_name: user.display_name },
-    });
-    authDispatch({ type: "finished sign up" });
-  } catch (error) {
-    authDispatch({ type: "fail sign up" });
-    notifications.show({
-      color: "orange",
-      message: "Ocorreu um erro ao criar a conta.",
-      title: "Erro no servidor 😢",
-    });
   }
 }
 
@@ -187,9 +154,7 @@ export async function updateUser(
 export function AuthProvider({ children }: AuthProviderProps) {
   const value = useReducer(authReducer, {
     isAuth: !!cookies.get("access_token"),
-    isSignedUp: false,
     isSigningIn: false,
-    isSigningUp: false,
     isUpdatingUser: false,
     user: cookies.get("user"),
   });
