@@ -6,7 +6,6 @@ const domain = () =>
     : "";
 
 export const cookies = new Cookies(undefined, {
-  domain: domain(),
   path: "/",
   secure: process.env.NODE_ENV === "production",
 });
