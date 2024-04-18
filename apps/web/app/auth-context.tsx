@@ -65,6 +65,14 @@ export type SignInResponse = {
 
 type Credentials = { email: string; password: string };
 
+export function saveAuthSession(user: User, access_token?: string) {
+  cookies.set("user", user);
+  if (access_token) {
+    cookies.set("access_token", access_token);
+    api.defaults.headers.Authorization = `Bearer ${access_token}`;
+  }
+}
+
 export async function signIn(
   authDispatch: AuthDispatch,
   credentials: Credentials
@@ -80,13 +88,11 @@ export async function signIn(
       message: "Agora você já pode utilizar a plataforma.",
       title: "Boas-vindas de volta 🎉",
     });
-    cookies.set("access_token", data.access_token);
     const user = {
       email: data.user.email,
       display_name: data.user.user_metadata.display_name,
     };
-    cookies.set("user", user);
-    api.defaults.headers.Authorization = `Bearer ${data.access_token}`;
+    saveAuthSession(user, data.access_token);
     authDispatch({ type: "finished sign in", user });
   } catch (error) {
     authDispatch({ type: "fail sign in" });
@@ -111,9 +117,14 @@ export async function signIn(
   }
 }
 
-export function signOut(authDispatch: AuthDispatch) {
-  cookies.remove("access_token");
+export function removeAuthSession() {
   cookies.remove("user");
+  cookies.remove("access_token");
+  delete api.defaults.headers.Authorization;
+}
+
+export function signOut(authDispatch: AuthDispatch) {
+  removeAuthSession();
   authDispatch({ type: "sign out" });
 }
 

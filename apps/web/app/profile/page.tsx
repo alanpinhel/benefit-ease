@@ -1,7 +1,6 @@
 "use client";
 
 import { api } from "@/lib/api";
-import { cookies } from "@/lib/cookies";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, PasswordInput, Stack, TextInput, Title } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
@@ -9,7 +8,7 @@ import axios from "axios";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { AuthDispatch, useAuth } from "../auth-context";
+import { AuthDispatch, saveAuthSession, useAuth } from "../auth-context";
 import { withAuth } from "../with-auth";
 
 const schema = z.object({
@@ -44,7 +43,7 @@ async function updateUser(
       message: "Usuário atualizado com sucesso.",
       title: "Sucesso 🎉",
     });
-    cookies.set("user", user);
+    saveAuthSession(user);
     authDispatch({ type: "update user", user });
   } catch (error) {
     if (!axios.isAxiosError(error)) {

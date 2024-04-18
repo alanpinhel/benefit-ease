@@ -1,16 +1,13 @@
-import { cookies } from "@/lib/cookies";
 import { server } from "@/mocks/node";
 import { fireEvent, render, screen } from "@/test-utils";
 import { http } from "msw";
+import { removeAuthSession, saveAuthSession } from "../auth-context";
+import { access_token, user } from "../auth-session-mock";
 import ProfilePage from "./page";
 
-beforeAll(() => {
-  cookies.set("access_token", "valid-token");
-});
-
-afterAll(() => {
-  cookies.remove("access_token");
-});
+// create authenticated environment
+beforeAll(() => saveAuthSession(user, access_token));
+afterAll(() => removeAuthSession());
 
 function renderProfilePage() {
   render(<ProfilePage />);
