@@ -39,7 +39,6 @@ function ProfilePage(): JSX.Element {
   return (
     <Stack gap={32}>
       <Title ta="center">Editar conta</Title>
-
       <form noValidate onSubmit={handleSubmit(onSubmit)}>
         <Stack gap={24}>
           <Stack>
@@ -68,13 +67,8 @@ function ProfilePage(): JSX.Element {
               {...register("password")}
             />
           </Stack>
-
           <Button type="submit" size="md" loading={isUpdatingUser}>
             Salvar
-          </Button>
-
-          <Button type="button" size="md" variant="outline">
-            Excluir conta
           </Button>
         </Stack>
       </form>
