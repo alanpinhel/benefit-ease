@@ -4,7 +4,6 @@ import {
   RenderResult,
   render as testingLibraryRender,
 } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import {
   AppRouterContext,
   AppRouterInstance,
@@ -57,4 +56,3 @@ export function createAuthEnvironment() {
 }
 
 export * from "@testing-library/react";
-export { userEvent };
