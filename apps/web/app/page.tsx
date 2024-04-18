@@ -1,16 +1,22 @@
 "use client";
 
 import { Anchor, Title } from "@mantine/core";
-import { signOut, useAuth } from "./auth-context";
+import { useCookies } from "react-cookie";
 import { withAuth } from "./with-auth";
 
 function HomePage(): JSX.Element {
-  const [{ user }, authDispatch] = useAuth();
+  const [cookies, _, removeCookie] = useCookies(["access_token", "user"]);
 
   return (
     <Title>
-      Olá, {user?.display_name}.{" "}
-      <Anchor inherit onClick={() => signOut(authDispatch)}>
+      Olá, {cookies.user?.display_name}.{" "}
+      <Anchor
+        inherit
+        onClick={() => {
+          removeCookie("access_token");
+          removeCookie("user");
+        }}
+      >
         Sair
       </Anchor>
       ?

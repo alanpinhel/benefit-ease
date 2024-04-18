@@ -1,9 +1,10 @@
+import { defaultSetOptions } from "@/lib/cookies";
 import { ColorSchemeScript, Container, MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
 import { Notifications } from "@mantine/notifications";
 import "@mantine/notifications/styles.css";
+import { CookiesProvider } from "react-cookie";
 import { theme } from "../theme";
-import { AuthProvider } from "./auth-context";
 
 export const metadata = {
   title: "BenefitEase",
@@ -35,7 +36,9 @@ export default function RootLayout({
             px={24}
             size="xs"
           >
-            <AuthProvider>{children}</AuthProvider>
+            <CookiesProvider defaultSetOptions={defaultSetOptions}>
+              {children}
+            </CookiesProvider>
           </Container>
         </MantineProvider>
       </body>
