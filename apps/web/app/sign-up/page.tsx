@@ -45,12 +45,12 @@ async function signUp(dispatch: Dispatch, user: FormData) {
     });
     dispatch({ type: "finished sign up" });
   } catch (error) {
-    dispatch({ type: "fail sign up" });
     notifications.show({
       color: "orange",
       message: "Ocorreu um erro ao criar a conta.",
       title: "Erro no servidor 😢",
     });
+    dispatch({ type: "fail sign up" });
   }
 }
 

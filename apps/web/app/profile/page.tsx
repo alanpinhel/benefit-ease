@@ -1,10 +1,15 @@
 "use client";
 
+import { api } from "@/lib/api";
+import { cookies } from "@/lib/cookies";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, PasswordInput, Stack, TextInput, Title } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
+import axios from "axios";
+import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { updateUser, useAuth } from "../auth-context";
+import { AuthDispatch, useAuth } from "../auth-context";
 import { withAuth } from "../with-auth";
 
 const schema = z.object({
@@ -18,8 +23,46 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
+type Dispatch = (isUpdatingUser: boolean) => void;
+
+async function updateUser(
+  authDispatch: AuthDispatch,
+  setUpdatingUser: Dispatch,
+  user: FormData
+) {
+  try {
+    setUpdatingUser(true);
+    await api.put("/auth/v1/user", {
+      email: user.email,
+      password: user.password || undefined,
+      data: {
+        display_name: user.display_name,
+      },
+    });
+    notifications.show({
+      color: "green",
+      message: "Usuário atualizado com sucesso.",
+      title: "Sucesso 🎉",
+    });
+    cookies.set("user", user);
+    authDispatch({ type: "update user", user });
+  } catch (error) {
+    if (!axios.isAxiosError(error)) {
+      throw error;
+    }
+    notifications.show({
+      color: "orange",
+      message: "Ocorreu um erro ao atualizar o usuário.",
+      title: "Erro no servidor 😢",
+    });
+  } finally {
+    setUpdatingUser(false);
+  }
+}
+
 function ProfilePage(): JSX.Element {
-  const [{ isUpdatingUser, user }, authDispatch] = useAuth();
+  const [{ user }, authDispatch] = useAuth();
+  const [isUpdatingUser, setUpdatingUser] = useState(false);
   const {
     register,
     handleSubmit,
@@ -33,7 +76,7 @@ function ProfilePage(): JSX.Element {
   });
 
   const onSubmit: SubmitHandler<FormData> = (data) => {
-    updateUser(authDispatch, data);
+    updateUser(authDispatch, setUpdatingUser, data);
   };
 
   return (

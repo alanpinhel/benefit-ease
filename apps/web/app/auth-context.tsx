@@ -6,37 +6,27 @@ import { notifications } from "@mantine/notifications";
 import axios from "axios";
 import { createContext, useContext, useReducer } from "react";
 
-type Credentials = { email: string; password: string };
 type User = { email: string; display_name: string };
+
 type Action = {
+  user?: User;
   type:
     | "start sign in"
     | "finished sign in"
     | "fail sign in"
     | "sign out"
-    | "start update user"
-    | "finished update user"
-    | "fail update user";
-  user?: User;
+    | "update user";
 };
-type Dispatch = (action: Action) => void;
+
+export type AuthDispatch = (action: Action) => void;
+
 type State = {
   isAuth: boolean;
   isSigningIn: boolean;
-  isUpdatingUser: boolean;
   user?: User;
 };
-type AuthProviderProps = { children: React.ReactNode };
-type AuthContextValue = [state: State, dispatch: Dispatch];
-export type SignInResponse = {
-  access_token: string;
-  user: {
-    email: string;
-    user_metadata: {
-      display_name: string;
-    };
-  };
-};
+
+type AuthContextValue = [state: State, dispatch: AuthDispatch];
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
@@ -54,14 +44,8 @@ function authReducer(state: State, action: Action): State {
     case "sign out": {
       return { ...state, isAuth: false };
     }
-    case "start update user": {
-      return { ...state, isUpdatingUser: true };
-    }
-    case "finished update user": {
-      return { ...state, isUpdatingUser: false, user: action.user };
-    }
-    case "fail update user": {
-      return { ...state, isUpdatingUser: false };
+    case "update user": {
+      return { ...state, user: action.user };
     }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);
@@ -69,7 +53,22 @@ function authReducer(state: State, action: Action): State {
   }
 }
 
-export async function signIn(authDispatch: Dispatch, credentials: Credentials) {
+export type SignInResponse = {
+  access_token: string;
+  user: {
+    email: string;
+    user_metadata: {
+      display_name: string;
+    };
+  };
+};
+
+type Credentials = { email: string; password: string };
+
+export async function signIn(
+  authDispatch: AuthDispatch,
+  credentials: Credentials
+) {
   try {
     authDispatch({ type: "start sign in" });
     const { data } = await api.post<SignInResponse>(
@@ -112,50 +111,18 @@ export async function signIn(authDispatch: Dispatch, credentials: Credentials) {
   }
 }
 
-export function signOut(authDispatch: Dispatch) {
+export function signOut(authDispatch: AuthDispatch) {
   cookies.remove("access_token");
   cookies.remove("user");
   authDispatch({ type: "sign out" });
 }
 
-export async function updateUser(
-  authDispatch: Dispatch,
-  { password, ...user }: Partial<Credentials> & User
-) {
-  try {
-    authDispatch({ type: "start update user" });
-    await api.put("/auth/v1/user", {
-      email: user.email,
-      password: password || undefined,
-      data: {
-        display_name: user.display_name,
-      },
-    });
-    notifications.show({
-      color: "green",
-      message: "Usuário atualizado com sucesso.",
-      title: "Sucesso 🎉",
-    });
-    cookies.set("user", user);
-    authDispatch({ type: "finished update user", user });
-  } catch (error) {
-    authDispatch({ type: "fail update user" });
-    if (!axios.isAxiosError(error)) {
-      throw error;
-    }
-    notifications.show({
-      color: "orange",
-      message: "Ocorreu um erro ao atualizar o usuário.",
-      title: "Erro no servidor 😢",
-    });
-  }
-}
+type AuthProviderProps = { children: React.ReactNode };
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const value = useReducer(authReducer, {
     isAuth: !!cookies.get("access_token"),
     isSigningIn: false,
-    isUpdatingUser: false,
     user: cookies.get("user"),
   });
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
