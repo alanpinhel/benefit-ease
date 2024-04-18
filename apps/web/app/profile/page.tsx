@@ -6,9 +6,9 @@ import { Button, PasswordInput, Stack, TextInput, Title } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import axios from "axios";
 import { useState } from "react";
+import { useCookies } from "react-cookie";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { AuthDispatch, saveAuthSession, useAuth } from "../auth-context";
 import { withAuth } from "../with-auth";
 
 const schema = z.object({
@@ -22,45 +22,8 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-type Dispatch = (isUpdatingUser: boolean) => void;
-
-async function updateUser(
-  authDispatch: AuthDispatch,
-  setUpdatingUser: Dispatch,
-  user: FormData
-) {
-  try {
-    setUpdatingUser(true);
-    await api.put("/auth/v1/user", {
-      email: user.email,
-      password: user.password || undefined,
-      data: {
-        display_name: user.display_name,
-      },
-    });
-    notifications.show({
-      color: "green",
-      message: "Usuário atualizado com sucesso.",
-      title: "Sucesso 🎉",
-    });
-    saveAuthSession(user);
-    authDispatch({ type: "update user", user });
-  } catch (error) {
-    if (!axios.isAxiosError(error)) {
-      throw error;
-    }
-    notifications.show({
-      color: "orange",
-      message: "Ocorreu um erro ao atualizar o usuário.",
-      title: "Erro no servidor 😢",
-    });
-  } finally {
-    setUpdatingUser(false);
-  }
-}
-
 function ProfilePage(): JSX.Element {
-  const [{ user }, authDispatch] = useAuth();
+  const [cookies, setCookie] = useCookies(["user"]);
   const [isUpdatingUser, setUpdatingUser] = useState(false);
   const {
     register,
@@ -69,13 +32,39 @@ function ProfilePage(): JSX.Element {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      display_name: user?.display_name,
-      email: user?.email,
+      display_name: cookies.user?.display_name,
+      email: cookies.user?.email,
     },
   });
 
-  const onSubmit: SubmitHandler<FormData> = (data) => {
-    updateUser(authDispatch, setUpdatingUser, data);
+  const onSubmit: SubmitHandler<FormData> = async ({ password, ...user }) => {
+    try {
+      setUpdatingUser(true);
+      await api.put("/auth/v1/user", {
+        email: user.email,
+        password: password || undefined,
+        data: {
+          display_name: user.display_name,
+        },
+      });
+      setCookie("user", user);
+      notifications.show({
+        color: "green",
+        message: "Usuário atualizado com sucesso.",
+        title: "Sucesso 🎉",
+      });
+    } catch (error) {
+      if (!axios.isAxiosError(error)) {
+        throw error;
+      }
+      notifications.show({
+        color: "orange",
+        message: "Ocorreu um erro ao atualizar o usuário.",
+        title: "Erro no servidor 😢",
+      });
+    } finally {
+      setUpdatingUser(false);
+    }
   };
 
   return (
