@@ -21,38 +21,9 @@ import { withoutAuth } from "../without-auth";
 import signUpImage from "./sign-up.svg";
 import signedUpImage from "./signed-up.svg";
 
-const schema = z.object({
-  display_name: z.string().min(2, { message: "Mínimo de 2 caracteres." }),
-  email: z.string().email({ message: "E-mail inválido." }),
-  password: z.string().min(6, { message: "Mínimo de 6 caracteres." }),
-});
-
-type FormData = z.infer<typeof schema>;
-
 type Action = {
   type: "start sign up" | "finished sign up" | "fail sign up";
 };
-
-type Dispatch = (action: Action) => void;
-
-async function signUp(dispatch: Dispatch, user: FormData) {
-  try {
-    dispatch({ type: "start sign up" });
-    await api.post("/auth/v1/signup", {
-      email: user.email,
-      password: user.password,
-      data: { display_name: user.display_name },
-    });
-    dispatch({ type: "finished sign up" });
-  } catch (error) {
-    notifications.show({
-      color: "orange",
-      message: "Ocorreu um erro ao criar a conta.",
-      title: "Erro no servidor 😢",
-    });
-    dispatch({ type: "fail sign up" });
-  }
-}
 
 type State = { isSigningUp: boolean; isSignedUp: boolean };
 
@@ -73,6 +44,14 @@ function reducer(state: State, action: Action): State {
   }
 }
 
+const schema = z.object({
+  display_name: z.string().min(2, { message: "Mínimo de 2 caracteres." }),
+  email: z.string().email({ message: "E-mail inválido." }),
+  password: z.string().min(6, { message: "Mínimo de 6 caracteres." }),
+});
+
+type FormData = z.infer<typeof schema>;
+
 function SignUpPage(): JSX.Element {
   const [{ isSignedUp, isSigningUp }, dispatch] = useReducer(reducer, {
     isSigningUp: false,
@@ -87,8 +66,23 @@ function SignUpPage(): JSX.Element {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit: SubmitHandler<FormData> = (data) => {
-    signUp(dispatch, data);
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    try {
+      dispatch({ type: "start sign up" });
+      await api.post("/auth/v1/signup", {
+        email: data.email,
+        password: data.password,
+        data: { display_name: data.display_name },
+      });
+      dispatch({ type: "finished sign up" });
+    } catch (error) {
+      notifications.show({
+        color: "orange",
+        message: "Ocorreu um erro ao criar a conta.",
+        title: "Erro no servidor 😢",
+      });
+      dispatch({ type: "fail sign up" });
+    }
   };
 
   if (isSignedUp) {
@@ -152,11 +146,9 @@ function SignUpPage(): JSX.Element {
               {...register("password")}
             />
           </Stack>
-
           <Button type="submit" size="md" loading={isSigningUp}>
             Criar conta
           </Button>
-
           <Text c="dimmed" ta="center">
             Já tem uma conta?{" "}
             <Anchor component={Link} href="/login">
