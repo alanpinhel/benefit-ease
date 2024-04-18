@@ -61,7 +61,7 @@ function ProfilePage(): JSX.Element {
             <PasswordInput
               error={errors.password?.message}
               label="Senha"
-              placeholder="Deixe em branco para manter a mesma."
+              placeholder="••••••"
               size="md"
               type="password"
               {...register("password")}
