@@ -7,6 +7,7 @@ import axios from "axios";
 import { createContext, useContext, useReducer } from "react";
 
 type Credentials = { email: string; password: string };
+type User = { email: string; display_name: string };
 type Action = {
   type:
     | "start sign up"
@@ -15,18 +16,32 @@ type Action = {
     | "start sign in"
     | "finished sign in"
     | "fail sign in"
-    | "sign out";
+    | "sign out"
+    | "start update user"
+    | "finished update user"
+    | "fail update user";
+  user?: User;
 };
 type Dispatch = (action: Action) => void;
 type State = {
   isAuth: boolean;
-  isSigningUp: boolean;
-  isSigningIn: boolean;
   isSignedUp: boolean;
+  isSigningIn: boolean;
+  isSigningUp: boolean;
+  isUpdatingUser: boolean;
+  user?: User;
 };
 type AuthProviderProps = { children: React.ReactNode };
 type AuthContextValue = [state: State, dispatch: Dispatch];
-type SignInResponse = { access_token: string };
+export type SignInResponse = {
+  access_token: string;
+  user: {
+    email: string;
+    user_metadata: {
+      display_name: string;
+    };
+  };
+};
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
@@ -45,7 +60,7 @@ function authReducer(state: State, action: Action): State {
       return { ...state, isSigningIn: true };
     }
     case "finished sign in": {
-      return { ...state, isAuth: true, isSigningIn: false };
+      return { ...state, isAuth: true, isSigningIn: false, user: action.user };
     }
     case "fail sign in": {
       return { ...state, isSigningIn: false };
@@ -53,22 +68,28 @@ function authReducer(state: State, action: Action): State {
     case "sign out": {
       return { ...state, isAuth: false };
     }
+    case "start update user": {
+      return { ...state, isUpdatingUser: true };
+    }
+    case "finished update user": {
+      return { ...state, isUpdatingUser: false, user: action.user };
+    }
+    case "fail update user": {
+      return { ...state, isUpdatingUser: false };
+    }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);
     }
   }
 }
 
-async function signUp(
-  authDispatch: Dispatch,
-  credentials: Credentials & { name: string }
-) {
+export async function signUp(authDispatch: Dispatch, user: Credentials & User) {
   try {
     authDispatch({ type: "start sign up" });
     await api.post("/auth/v1/signup", {
-      email: credentials.email,
-      password: credentials.password,
-      data: { display_name: credentials.name },
+      email: user.email,
+      password: user.password,
+      data: { display_name: user.display_name },
     });
     authDispatch({ type: "finished sign up" });
   } catch (error) {
@@ -81,7 +102,7 @@ async function signUp(
   }
 }
 
-async function signIn(authDispatch: Dispatch, credentials: Credentials) {
+export async function signIn(authDispatch: Dispatch, credentials: Credentials) {
   try {
     authDispatch({ type: "start sign in" });
     const { data } = await api.post<SignInResponse>(
@@ -94,8 +115,13 @@ async function signIn(authDispatch: Dispatch, credentials: Credentials) {
       title: "Boas-vindas de volta 🎉",
     });
     cookies.set("access_token", data.access_token);
+    const user = {
+      email: data.user.email,
+      display_name: data.user.user_metadata.display_name,
+    };
+    cookies.set("user", user);
     api.defaults.headers.Authorization = `Bearer ${data.access_token}`;
-    authDispatch({ type: "finished sign in" });
+    authDispatch({ type: "finished sign in", user });
   } catch (error) {
     authDispatch({ type: "fail sign in" });
     if (!axios.isAxiosError(error)) {
@@ -119,27 +145,61 @@ async function signIn(authDispatch: Dispatch, credentials: Credentials) {
   }
 }
 
-function signOut(authDispatch: Dispatch) {
+export function signOut(authDispatch: Dispatch) {
   cookies.remove("access_token");
+  cookies.remove("user");
   authDispatch({ type: "sign out" });
 }
 
-function AuthProvider({ children }: AuthProviderProps) {
+export async function updateUser(
+  authDispatch: Dispatch,
+  { password, ...user }: Partial<Credentials> & User
+) {
+  try {
+    authDispatch({ type: "start update user" });
+    await api.put("/auth/v1/user", {
+      email: user.email,
+      password: password || undefined,
+      data: {
+        display_name: user.display_name,
+      },
+    });
+    notifications.show({
+      color: "green",
+      message: "Usuário atualizado com sucesso.",
+      title: "Sucesso 🎉",
+    });
+    cookies.set("user", user);
+    authDispatch({ type: "finished update user", user });
+  } catch (error) {
+    authDispatch({ type: "fail update user" });
+    if (!axios.isAxiosError(error)) {
+      throw error;
+    }
+    notifications.show({
+      color: "orange",
+      message: "Ocorreu um erro ao atualizar o usuário.",
+      title: "Erro no servidor 😢",
+    });
+  }
+}
+
+export function AuthProvider({ children }: AuthProviderProps) {
   const value = useReducer(authReducer, {
     isAuth: !!cookies.get("access_token"),
+    isSignedUp: false,
     isSigningIn: false,
     isSigningUp: false,
-    isSignedUp: false,
+    isUpdatingUser: false,
+    user: cookies.get("user"),
   });
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-function useAuth() {
+export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error("useAuth must be used within a AuthProvider");
   }
   return context;
 }
-
-export { AuthProvider, signIn, signOut, signUp, useAuth };

@@ -5,15 +5,15 @@ import { signOut, useAuth } from "./auth-context";
 import { withAuth } from "./with-auth";
 
 function HomePage(): JSX.Element {
-  const [, authDispatch] = useAuth();
+  const [{ user }, authDispatch] = useAuth();
 
   return (
     <Title>
-      Olá,{" "}
+      Olá, {user?.display_name}.{" "}
       <Anchor inherit onClick={() => signOut(authDispatch)}>
-        sair
+        Sair
       </Anchor>
-      .
+      ?
     </Title>
   );
 }
