@@ -4,6 +4,7 @@ import { generateColors } from "@mantine/colors-generator";
 import {
   Button,
   MantineThemeOverride,
+  PasswordInput,
   TextInput,
   createTheme,
 } from "@mantine/core";
@@ -31,6 +32,11 @@ export const theme: MantineThemeOverride = createTheme({
       },
     }),
     TextInput: TextInput.extend({
+      defaultProps: {
+        radius: "md",
+      },
+    }),
+    PasswordInput: PasswordInput.extend({
       defaultProps: {
         radius: "md",
       },

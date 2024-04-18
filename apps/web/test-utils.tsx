@@ -4,12 +4,12 @@ import {
   RenderResult,
   render as testingLibraryRender,
 } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import {
   AppRouterContext,
   AppRouterInstance,
 } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import { AuthProvider } from "./app/auth-context";
+import { CookiesProvider } from "react-cookie";
+import { cookies, defaultSetOptions } from "./lib/cookies";
 import { theme } from "./theme";
 
 type AppRouterProviderMockProps = {
@@ -37,18 +37,24 @@ function AppRouterProviderMock({
   );
 }
 
-function render(ui: React.ReactNode): RenderResult {
+export function render(ui: React.ReactNode): RenderResult {
   return testingLibraryRender(<>{ui}</>, {
     wrapper: ({ children }: { children: React.ReactNode }) => (
       <AppRouterProviderMock>
         <MantineProvider theme={theme}>
           <Notifications />
-          <AuthProvider>{children}</AuthProvider>
+          <CookiesProvider defaultSetOptions={defaultSetOptions}>
+            {children}
+          </CookiesProvider>
         </MantineProvider>
       </AppRouterProviderMock>
     ),
   });
 }
 
+export function createAuthEnvironment() {
+  beforeAll(() => cookies.set("access_token", "valid-token"));
+  afterAll(() => cookies.remove("access_token"));
+}
+
 export * from "@testing-library/react";
-export { render, userEvent };

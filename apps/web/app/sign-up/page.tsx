@@ -1,18 +1,51 @@
 "use client";
 
+import { api } from "@/lib/api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Anchor, Button, Stack, Text, TextInput, Title } from "@mantine/core";
+import {
+  Anchor,
+  Button,
+  PasswordInput,
+  Stack,
+  Text,
+  TextInput,
+  Title,
+} from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import Image from "next/image";
 import Link from "next/link";
+import { useReducer } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { signUp, useAuth } from "../auth-context";
 import { withoutAuth } from "../without-auth";
 import signUpImage from "./sign-up.svg";
 import signedUpImage from "./signed-up.svg";
 
+type Action = {
+  type: "start sign up" | "finished sign up" | "fail sign up";
+};
+
+type State = { isSigningUp: boolean; isSignedUp: boolean };
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case "start sign up": {
+      return { ...state, isSigningUp: true };
+    }
+    case "finished sign up": {
+      return { ...state, isSigningUp: false, isSignedUp: true };
+    }
+    case "fail sign up": {
+      return { ...state, isSigningUp: false };
+    }
+    default: {
+      throw new Error(`Unhandled action type: ${action.type}`);
+    }
+  }
+}
+
 const schema = z.object({
-  name: z.string().min(2, { message: "Mínimo de 2 caracteres." }),
+  display_name: z.string().min(2, { message: "Mínimo de 2 caracteres." }),
   email: z.string().email({ message: "E-mail inválido." }),
   password: z.string().min(6, { message: "Mínimo de 6 caracteres." }),
 });
@@ -20,7 +53,11 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 function SignUpPage(): JSX.Element {
-  const [{ isSigningUp, isSignedUp }, authDispatch] = useAuth();
+  const [{ isSignedUp, isSigningUp }, dispatch] = useReducer(reducer, {
+    isSigningUp: false,
+    isSignedUp: false,
+  });
+
   const {
     register,
     handleSubmit,
@@ -29,8 +66,23 @@ function SignUpPage(): JSX.Element {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit: SubmitHandler<FormData> = (data) => {
-    signUp(authDispatch, data);
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    try {
+      dispatch({ type: "start sign up" });
+      await api.post("/auth/v1/signup", {
+        email: data.email,
+        password: data.password,
+        data: { display_name: data.display_name },
+      });
+      dispatch({ type: "finished sign up" });
+    } catch (error) {
+      notifications.show({
+        color: "orange",
+        message: "Ocorreu um erro ao criar a conta.",
+        title: "Erro no servidor 😢",
+      });
+      dispatch({ type: "fail sign up" });
+    }
   };
 
   if (isSignedUp) {
@@ -47,7 +99,12 @@ function SignUpPage(): JSX.Element {
             Conta criada com sucesso 🎉
           </Title>
           <Text fz="md" ta="center">
-            Confirme sua conta clicando no link enviado para o seu e-mail.
+            Confirme sua conta clicando no link enviado para o seu e-mail. Já
+            confirmou?{" "}
+            <Anchor component={Link} href="/login">
+              Entrar
+            </Anchor>
+            .
           </Text>
         </Stack>
       </Stack>
@@ -62,20 +119,18 @@ function SignUpPage(): JSX.Element {
         src={signUpImage}
         style={{ marginInline: "auto", width: "90%", height: "auto" }}
       />
-
       <Title ta="center">Crie sua conta</Title>
-
       <form noValidate onSubmit={handleSubmit(onSubmit)}>
         <Stack gap={24}>
           <Stack>
             <TextInput
               required
-              error={errors.name?.message}
+              error={errors.display_name?.message}
               label="Nome"
               placeholder="Nome de preferência"
               size="md"
               type="text"
-              {...register("name")}
+              {...register("display_name")}
             />
             <TextInput
               required
@@ -86,7 +141,7 @@ function SignUpPage(): JSX.Element {
               type="email"
               {...register("email")}
             />
-            <TextInput
+            <PasswordInput
               required
               error={errors.password?.message}
               label="Senha"
@@ -96,11 +151,9 @@ function SignUpPage(): JSX.Element {
               {...register("password")}
             />
           </Stack>
-
           <Button type="submit" size="md" loading={isSigningUp}>
             Criar conta
           </Button>
-
           <Text c="dimmed" ta="center">
             Já tem uma conta?{" "}
             <Anchor component={Link} href="/login">
