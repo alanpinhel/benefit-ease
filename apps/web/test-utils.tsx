@@ -9,7 +9,7 @@ import {
   AppRouterInstance,
 } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { CookiesProvider } from "react-cookie";
-import { cookies } from "./lib/cookies";
+import { cookies, defaultSetOptions } from "./lib/cookies";
 import { theme } from "./theme";
 
 type AppRouterProviderMockProps = {
@@ -43,7 +43,9 @@ export function render(ui: React.ReactNode): RenderResult {
       <AppRouterProviderMock>
         <MantineProvider theme={theme}>
           <Notifications />
-          <CookiesProvider>{children}</CookiesProvider>
+          <CookiesProvider defaultSetOptions={defaultSetOptions}>
+            {children}
+          </CookiesProvider>
         </MantineProvider>
       </AppRouterProviderMock>
     ),

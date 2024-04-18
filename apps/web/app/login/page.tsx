@@ -21,7 +21,7 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-type SignInResponse = {
+export type SignInResponse = {
   access_token: string;
   user: {
     email: string;
