@@ -98,9 +98,11 @@ function SignUpPage(): JSX.Element {
           <Title ta="center" order={4}>
             Conta criada com sucesso 🎉
           </Title>
-          <Text fz="md" ta="center">
-            Confirme sua conta clicando no link enviado para o seu e-mail. Já
-            confirmou?{" "}
+          <Text fz="md" ta="center" c="dimmed">
+            Confirme sua conta clicando no link enviado para o seu e-mail.
+          </Text>
+          <Text fz="md" ta="center" c="dimmed">
+            Já confirmou?{" "}
             <Anchor component={Link} href="/login">
               Entrar
             </Anchor>
