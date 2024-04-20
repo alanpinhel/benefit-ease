@@ -10,6 +10,7 @@
     "latin",
     "signup",
     "supabase",
+    "testid",
     "undici"
   ]
 }

@@ -53,8 +53,14 @@ export function render(ui: React.ReactNode): RenderResult {
 }
 
 export function createAuthEnvironment() {
-  beforeAll(() => cookies.set("access_token", "valid-token"));
-  afterAll(() => cookies.remove("access_token"));
+  beforeAll(() => {
+    cookies.set("access_token", "valid-token");
+    cookies.set("user", { display_name: "John Doe" });
+  });
+  afterAll(() => {
+    cookies.remove("access_token");
+    cookies.remove("user");
+  });
 }
 
 export * from "@testing-library/react";
