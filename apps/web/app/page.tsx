@@ -1,12 +1,36 @@
 "use client";
 
+import { api } from "@/lib/api";
 import { Avatar, Group, Stack, Text } from "@mantine/core";
+import { formatToBRL } from "brazilian-values";
+import { Fragment, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { withAuth } from "./with-auth";
+
+type Account = {
+  id: string;
+  balance: number;
+  benefit: {
+    id: string;
+    name: string;
+    color_from: string;
+    color_to: string;
+    icon: string;
+  };
+};
 
 function HomePage(): JSX.Element {
   const [cookies, _, removeCookie] = useCookies(["access_token", "user"]);
   const displayName = cookies.user?.display_name;
+  const [accounts, setAccounts] = useState<Account[]>([]);
+
+  useEffect(() => {
+    const fetch = async () => {
+      const { data } = await api.get("/rest/v1/accounts?select=*");
+      setAccounts(data);
+    };
+    fetch();
+  }, []);
 
   return (
     <>
@@ -31,7 +55,15 @@ function HomePage(): JSX.Element {
           </Stack>
         </Group>
       </Group>
-      <Stack component="main" gap={32} pt={32} pb={48} px={24}></Stack>
+      <Stack component="main" gap={32} pt={32} pb={48} px={24}>
+        {accounts.map((account) => (
+          <Fragment key={account.id}>
+            <span>{account.benefit.icon}</span>
+            <span>{formatToBRL(account.balance)}</span>
+            <span>{account.benefit.name}</span>
+          </Fragment>
+        ))}
+      </Stack>
     </>
   );
 }
