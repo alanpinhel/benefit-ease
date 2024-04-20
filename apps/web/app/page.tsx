@@ -1,14 +1,24 @@
 "use client";
 
 import { api } from "@/lib/api";
-import { Avatar, Group, Menu, Stack, Text } from "@mantine/core";
+import {
+  ActionIcon,
+  Avatar,
+  Group,
+  Menu,
+  Stack,
+  Text,
+  VisuallyHidden,
+} from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { IconEye, IconEyeOff } from "@tabler/icons-react";
 import { formatToBRL } from "brazilian-values";
 import Link from "next/link";
 import { Fragment, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { withAuth } from "./with-auth";
 
-type Account = {
+export type Account = {
   id: string;
   balance: number;
   benefit: {
@@ -22,8 +32,9 @@ type Account = {
 
 function HomePage(): JSX.Element {
   const [cookies, _, removeCookie] = useCookies(["access_token", "user"]);
-  const displayName = cookies.user?.display_name;
   const [accounts, setAccounts] = useState<Account[]>([]);
+  const [isHideValues, { toggle: toggleHideValues }] = useDisclosure(false);
+  const displayName = cookies.user?.display_name;
 
   useEffect(() => {
     const fetch = async () => {
@@ -49,8 +60,13 @@ function HomePage(): JSX.Element {
       >
         <Group gap={8}>
           <Menu>
-            <Menu.Target data-testid="avatar-menu">
-              <Avatar size={36} color="green" variant="filled">
+            <Menu.Target>
+              <Avatar
+                color="green"
+                component="button"
+                size={36}
+                variant="filled"
+              >
                 {displayName?.[0]}
               </Avatar>
             </Menu.Target>
@@ -69,13 +85,28 @@ function HomePage(): JSX.Element {
               {displayName}
             </Text>
           </Stack>
+          <ActionIcon component="button" onClick={toggleHideValues}>
+            {isHideValues ? (
+              <>
+                <VisuallyHidden>Mostrar valores</VisuallyHidden>
+                <IconEye size={16} />
+              </>
+            ) : (
+              <>
+                <VisuallyHidden>Esconder valores</VisuallyHidden>
+                <IconEyeOff size={16} />
+              </>
+            )}
+          </ActionIcon>
         </Group>
       </Group>
       <Stack component="main" gap={32} pt={32} pb={48} px={24}>
         {accounts.map((account) => (
           <Fragment key={account.id}>
             <span>{account.benefit.icon}</span>
-            <span>{formatToBRL(account.balance)}</span>
+            <span>
+              {isHideValues ? "🙈🙉🙊" : formatToBRL(account.balance)}
+            </span>
             <span>{account.benefit.name}</span>
           </Fragment>
         ))}
