@@ -94,15 +94,11 @@ function SignUpPage(): JSX.Element {
           src={signedUpImage}
           style={{ marginInline: "auto", width: "90%", height: "auto" }}
         />
-        <Stack>
-          <Title ta="center" order={4}>
-            Conta criada com sucesso 🎉
-          </Title>
-          <Text fz="md" ta="center" c="dimmed">
-            Confirme sua conta clicando no link enviado para o seu e-mail.
-          </Text>
-          <Text fz="md" ta="center" c="dimmed">
-            Já confirmou?{" "}
+        <Stack gap={0} ta="center">
+          <Title order={4}>Conta criada com sucesso 🎉</Title>
+          <Text fz="md" c="dimmed">
+            Confirme sua conta clicando no link enviado para o seu e-mail. Já
+            confirmou?{" "}
             <Anchor component={Link} href="/login">
               Entrar
             </Anchor>
