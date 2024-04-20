@@ -1,7 +1,8 @@
 import { SignInResponse } from "@/app/login/page";
+import { Account } from "@/app/page";
 import { http, HttpResponse, RequestHandler } from "msw";
 
-export const accounts = [
+export const accounts: Account[] = [
   {
     id: "1",
     balance: 360,
@@ -49,10 +50,11 @@ export const accounts = [
 ];
 
 export const handlers: RequestHandler[] = [
-  http.post("*/auth/v1/signup", () => HttpResponse.json({})),
-
-  http.post("*/auth/v1/token", () =>
-    HttpResponse.json({
+  http.post("*/auth/v1/signup", () => {
+    return HttpResponse.json({});
+  }),
+  http.post("*/auth/v1/token", () => {
+    return HttpResponse.json({
       access_token: `token`,
       user: {
         email: "bruce.wayne@batman.com",
@@ -60,12 +62,14 @@ export const handlers: RequestHandler[] = [
           display_name: "Bruce Wayne",
         },
       },
-    } satisfies SignInResponse)
-  ),
-
-  http.put("*/auth/v1/user", () => HttpResponse.json({})),
-
-  http.get("*/rest/v1/accounts", () => HttpResponse.json(accounts)),
+    } satisfies SignInResponse);
+  }),
+  http.put("*/auth/v1/user", () => {
+    return HttpResponse.json({});
+  }),
+  http.get("*/rest/v1/accounts", () => {
+    return HttpResponse.json(accounts);
+  }),
 ];
 
 /**
