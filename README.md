@@ -1,5 +1,5 @@
 <p align="center">
-  <span style="font-size: 100px">🎉</span>
+  <img src="images/demo.gif" width="100" style="margin-right: 8px;"/>
   <h1 align="center">BenefitEase</h1>
   <p align="center">
     ✨ <a href="https://benefit-ease-web.vercel.app">https://benefit-ease.app</a> ✨
