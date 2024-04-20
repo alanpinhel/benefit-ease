@@ -35,11 +35,21 @@ export const theme: MantineThemeOverride = createTheme({
       defaultProps: {
         radius: "md",
       },
+      styles: () => ({
+        label: {
+          fontWeight: 600,
+        },
+      }),
     }),
     PasswordInput: PasswordInput.extend({
       defaultProps: {
         radius: "md",
       },
+      styles: () => ({
+        label: {
+          fontWeight: 600,
+        },
+      }),
     }),
   },
 });

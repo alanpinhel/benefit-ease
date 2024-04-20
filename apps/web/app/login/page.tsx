@@ -85,7 +85,7 @@ function LoginPage() {
   };
 
   return (
-    <Stack gap={32}>
+    <Stack component="main" gap={32} pt={32} pb={48} px={24}>
       <Image
         aria-hidden
         alt=""
