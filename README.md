@@ -8,9 +8,8 @@
   </p>
 </p>
 <p align="center">
+<a href="https://github.com/alanpinhel/benefit-ease/actions/workflows/build.yml?query=branch%3Amain"><img src="https://github.com/alanpinhel/benefit-ease/actions/workflows/build.yml/badge.svg?event=push&branch=main" alt="Benefit Ease CI status" /></a>
 <a href="https://github.com/alanpinhel/benefit-ease/actions/workflows/test.yml?query=branch%3Amain"><img src="https://github.com/alanpinhel/benefit-ease/actions/workflows/test.yml/badge.svg?event=push&branch=main" alt="Benefit Ease CI status" /></a>
-<a href="https://www.npmjs.com/package/zod" rel="nofollow"><img src="https://img.shields.io/github/stars/alanpinhel/benefit-ease" alt="stars"></a>
-</p>
 
 ## Sumário
 
