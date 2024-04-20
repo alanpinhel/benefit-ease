@@ -1,5 +1,5 @@
 <p align="center">
-  <span style="font-size: 100px">🎉</span>
+  <img src="images/demo.gif" width="100" style="margin-right: 8px;"/>
   <h1 align="center">BenefitEase</h1>
   <p align="center">
     ✨ <a href="https://benefit-ease-web.vercel.app">https://benefit-ease.app</a> ✨
@@ -8,9 +8,8 @@
   </p>
 </p>
 <p align="center">
+<a href="https://github.com/alanpinhel/benefit-ease/actions/workflows/build.yml?query=branch%3Amain"><img src="https://github.com/alanpinhel/benefit-ease/actions/workflows/build.yml/badge.svg?event=push&branch=main" alt="Benefit Ease CI status" /></a>
 <a href="https://github.com/alanpinhel/benefit-ease/actions/workflows/test.yml?query=branch%3Amain"><img src="https://github.com/alanpinhel/benefit-ease/actions/workflows/test.yml/badge.svg?event=push&branch=main" alt="Benefit Ease CI status" /></a>
-<a href="https://www.npmjs.com/package/zod" rel="nofollow"><img src="https://img.shields.io/github/stars/alanpinhel/benefit-ease" alt="stars"></a>
-</p>
 
 ## Sumário
 
