@@ -1,8 +1,9 @@
 "use client";
 
 import { api } from "@/lib/api";
-import { Avatar, Group, Stack, Text } from "@mantine/core";
+import { Avatar, Group, Menu, Stack, Text } from "@mantine/core";
 import { formatToBRL } from "brazilian-values";
+import Link from "next/link";
 import { Fragment, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { withAuth } from "./with-auth";
@@ -32,6 +33,11 @@ function HomePage(): JSX.Element {
     fetch();
   }, []);
 
+  const handleLogout = () => {
+    removeCookie("access_token");
+    removeCookie("user");
+  };
+
   return (
     <>
       <Group
@@ -42,9 +48,19 @@ function HomePage(): JSX.Element {
         p={24}
       >
         <Group gap={8}>
-          <Avatar size={36} color="green" variant="filled">
-            {displayName?.[0]}
-          </Avatar>
+          <Menu>
+            <Menu.Target data-testid="avatar-menu">
+              <Avatar size={36} color="green" variant="filled">
+                {displayName?.[0]}
+              </Avatar>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item component={Link} href="/profile">
+                Perfil
+              </Menu.Item>
+              <Menu.Item onClick={handleLogout}>Sair</Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
           <Stack gap={4}>
             <Text fz="sm" c="red.1" lh={1}>
               Bom dia 👋
