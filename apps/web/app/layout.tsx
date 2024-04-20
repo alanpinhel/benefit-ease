@@ -27,14 +27,7 @@ export default function RootLayout({
       <body>
         <MantineProvider defaultColorScheme="auto" theme={theme}>
           <Notifications />
-          <Container
-            component="main"
-            maw={430}
-            pb={48}
-            pt={32}
-            px={24}
-            size="xs"
-          >
+          <Container maw={430} px={0} size="xs">
             <ClientOnly>{children}</ClientOnly>
           </Container>
         </MantineProvider>

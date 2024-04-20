@@ -2,9 +2,19 @@
 
 import { api } from "@/lib/api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, PasswordInput, Stack, TextInput, Title } from "@mantine/core";
+import {
+  ActionIcon,
+  Button,
+  Group,
+  PasswordInput,
+  Stack,
+  Text,
+  TextInput,
+} from "@mantine/core";
 import { notifications } from "@mantine/notifications";
+import { IconArrowLeft } from "@tabler/icons-react";
 import axios from "axios";
+import Link from "next/link";
 import { useState } from "react";
 import { useCookies } from "react-cookie";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -68,42 +78,65 @@ function ProfilePage(): JSX.Element {
   };
 
   return (
-    <Stack gap={32}>
-      <Title ta="center">Editar conta</Title>
-      <form noValidate onSubmit={handleSubmit(onSubmit)}>
-        <Stack gap={24}>
-          <Stack>
-            <TextInput
-              required
-              error={errors.display_name?.message}
-              label="Nome"
-              size="md"
-              type="text"
-              {...register("display_name")}
-            />
-            <TextInput
-              required
-              error={errors.email?.message}
-              label="E-mail"
-              size="md"
-              type="email"
-              {...register("email")}
-            />
-            <PasswordInput
-              error={errors.password?.message}
-              label="Senha"
-              placeholder="••••••"
-              size="md"
-              type="password"
-              {...register("password")}
-            />
+    <>
+      <Group
+        bg="red.8"
+        c="red.0"
+        component="header"
+        h={84}
+        justify="space-between"
+        p={24}
+      >
+        <ActionIcon
+          c="red.0"
+          component={Link}
+          href="/"
+          size="md"
+          variant="transparent"
+        >
+          <IconArrowLeft size={20} />
+        </ActionIcon>
+        <Text ta="center" fz="md" fw={600}>
+          Editar conta
+        </Text>
+        <ActionIcon style={{ visibility: "hidden" }} size="md" />
+      </Group>
+      <Stack component="main" gap={32} pt={32} pb={48} px={24}>
+        <form noValidate onSubmit={handleSubmit(onSubmit)}>
+          <Stack gap={24}>
+            <Stack>
+              <TextInput
+                required
+                error={errors.display_name?.message}
+                label="Nome"
+                size="md"
+                type="text"
+                {...register("display_name")}
+              />
+              <TextInput
+                required
+                error={errors.email?.message}
+                label="E-mail"
+                size="md"
+                type="email"
+                {...register("email")}
+              />
+              <PasswordInput
+                error={errors.password?.message}
+                label="Senha"
+                placeholder="••••••"
+                size="md"
+                type="password"
+                {...register("password")}
+              />
+            </Stack>
+            <Button type="submit" size="md" loading={isUpdatingUser}>
+              Salvar
+            </Button>
           </Stack>
-          <Button type="submit" size="md" loading={isUpdatingUser}>
-            Salvar
-          </Button>
-        </Stack>
-      </form>
-    </Stack>
+        </form>
+      </Stack>
+    </>
   );
 }
 
