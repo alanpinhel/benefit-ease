@@ -21,7 +21,7 @@ import { withAuth } from "./with-auth";
 export type Account = {
   id: string;
   balance: number;
-  benefit: {
+  benefits: {
     id: string;
     name: string;
     color_from: string;
@@ -38,7 +38,9 @@ function HomePage(): JSX.Element {
 
   useEffect(() => {
     const fetch = async () => {
-      const { data } = await api.get("/rest/v1/accounts?select=*");
+      const { data } = await api.get(
+        "/rest/v1/accounts?select=id,balance,benefits(*)"
+      );
       setAccounts(data);
     };
     fetch();
@@ -103,11 +105,11 @@ function HomePage(): JSX.Element {
       <Stack component="main" gap={32} pt={32} pb={48} px={24}>
         {accounts.map((account) => (
           <Fragment key={account.id}>
-            <span>{account.benefit.icon}</span>
+            <span>{account.benefits.icon}</span>
             <span>
               {isHideValues ? "🙈🙉🙊" : formatToBRL(account.balance)}
             </span>
-            <span>{account.benefit.name}</span>
+            <span>{account.benefits.name}</span>
           </Fragment>
         ))}
       </Stack>

@@ -6,7 +6,7 @@ export const accounts: Account[] = [
   {
     id: "1",
     balance: 360,
-    benefit: {
+    benefits: {
       id: "1",
       name: "Mobilidade",
       color_from: "lime",
@@ -17,7 +17,7 @@ export const accounts: Account[] = [
   {
     id: "2",
     balance: 840,
-    benefit: {
+    benefits: {
       id: "2",
       name: "Alimentação",
       color_from: "teal",
@@ -28,7 +28,7 @@ export const accounts: Account[] = [
   {
     id: "3",
     balance: 120,
-    benefit: {
+    benefits: {
       id: "3",
       name: "Cultura",
       color_from: "orange",
@@ -39,7 +39,7 @@ export const accounts: Account[] = [
   {
     id: "4",
     balance: 250,
-    benefit: {
+    benefits: {
       id: "4",
       name: "Saúde",
       color_from: "#f27794",
