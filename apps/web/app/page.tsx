@@ -8,7 +8,9 @@ import {
   Menu,
   Stack,
   Text,
+  UnstyledButton,
   VisuallyHidden,
+  useComputedColorScheme,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconEye, IconEyeOff } from "@tabler/icons-react";
@@ -17,6 +19,17 @@ import Link from "next/link";
 import { Fragment, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { withAuth } from "./with-auth";
+
+const getGreeting = () => {
+  const hours = new Date().getHours();
+  if (hours >= 6 && hours < 12) {
+    return "Bom dia";
+  }
+  if (hours >= 12 && hours < 18) {
+    return "Boa tarde";
+  }
+  return "Boa noite";
+};
 
 export type Account = {
   id: string;
@@ -34,6 +47,7 @@ function HomePage(): JSX.Element {
   const [cookies, _, removeCookie] = useCookies(["access_token", "user"]);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [isHideValues, { toggle: toggleHideValues }] = useDisclosure(false);
+  const computedColorScheme = useComputedColorScheme();
   const displayName = cookies.user?.display_name;
 
   useEffect(() => {
@@ -54,18 +68,19 @@ function HomePage(): JSX.Element {
   return (
     <>
       <Group
-        bg="red.8"
+        bg={computedColorScheme === "dark" ? "red.9" : "red.8"}
         component="header"
         h={84}
         justify="space-between"
         p={24}
+        c="red.0"
       >
         <Group gap={8}>
-          <Menu>
+          <Menu width={100} position="bottom-start" offset={2} radius={8}>
             <Menu.Target>
               <Avatar
                 color="green"
-                component="button"
+                component={UnstyledButton}
                 size={36}
                 variant="filled"
               >
@@ -81,26 +96,31 @@ function HomePage(): JSX.Element {
           </Menu>
           <Stack gap={4}>
             <Text fz="sm" c="red.1" lh={1}>
-              Bom dia 👋
+              {getGreeting()} 👋
             </Text>
             <Text fz="md" fw={600} c="red.0" lh={1}>
               {displayName}
             </Text>
           </Stack>
-          <ActionIcon component="button" onClick={toggleHideValues}>
-            {isHideValues ? (
-              <>
-                <VisuallyHidden>Mostrar valores</VisuallyHidden>
-                <IconEye size={16} />
-              </>
-            ) : (
-              <>
-                <VisuallyHidden>Esconder valores</VisuallyHidden>
-                <IconEyeOff size={16} />
-              </>
-            )}
-          </ActionIcon>
         </Group>
+        <ActionIcon
+          c="red.1"
+          component="button"
+          onClick={toggleHideValues}
+          size="md"
+        >
+          {isHideValues ? (
+            <>
+              <VisuallyHidden>Mostrar valores</VisuallyHidden>
+              <IconEye style={{ width: "70%", height: "70%" }} />
+            </>
+          ) : (
+            <>
+              <VisuallyHidden>Esconder valores</VisuallyHidden>
+              <IconEyeOff style={{ width: "70%", height: "70%" }} />
+            </>
+          )}
+        </ActionIcon>
       </Group>
       <Stack component="main" gap={32} pt={32} pb={48} px={24}>
         {accounts.map((account) => (
