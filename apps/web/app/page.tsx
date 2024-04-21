@@ -20,17 +20,6 @@ import { Fragment, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { withAuth } from "./with-auth";
 
-const getGreeting = () => {
-  const hours = new Date().getHours();
-  if (hours >= 6 && hours < 12) {
-    return "Bom dia";
-  }
-  if (hours >= 12 && hours < 18) {
-    return "Boa tarde";
-  }
-  return "Boa noite";
-};
-
 export type Account = {
   id: string;
   balance: number;
@@ -43,25 +32,45 @@ export type Account = {
   };
 };
 
-function HomePage(): JSX.Element {
-  const [cookies, _, removeCookie] = useCookies(["access_token", "user"]);
+function useAccounts() {
   const [accounts, setAccounts] = useState<Account[]>([]);
+  useEffect(() => {
+    const controller = new AbortController();
+    api
+      .get("/rest/v1/accounts?select=id,balance,benefits(*)", {
+        signal: controller.signal,
+      })
+      .then(({ data }) => setAccounts(data));
+    return () => controller.abort();
+  }, []);
+  return accounts;
+}
+
+const getGreeting = () => {
+  const hours = new Date().getHours();
+  if (hours >= 6 && hours < 12) {
+    return "Bom dia";
+  }
+  if (hours >= 12 && hours < 18) {
+    return "Boa tarde";
+  }
+  return "Boa noite";
+};
+
+function HomePage(): JSX.Element {
+  const [cookies, _, removeCookie] = useCookies([
+    "access_token",
+    "user",
+    "refresh_token",
+  ]);
   const [isHideValues, { toggle: toggleHideValues }] = useDisclosure(false);
   const computedColorScheme = useComputedColorScheme();
+  const accounts = useAccounts();
   const displayName = cookies.user?.display_name;
-
-  useEffect(() => {
-    const fetch = async () => {
-      const { data } = await api.get(
-        "/rest/v1/accounts?select=id,balance,benefits(*)"
-      );
-      setAccounts(data);
-    };
-    fetch();
-  }, []);
 
   const handleLogout = () => {
     removeCookie("access_token");
+    removeCookie("refresh_token");
     removeCookie("user");
   };
 
@@ -69,11 +78,11 @@ function HomePage(): JSX.Element {
     <>
       <Group
         bg={computedColorScheme === "dark" ? "red.9" : "red.8"}
+        c="red.0"
         component="header"
         h={84}
         justify="space-between"
         p={24}
-        c="red.0"
       >
         <Group gap={8}>
           <Menu width={100} position="bottom-start" offset={2} radius={8}>
@@ -108,6 +117,7 @@ function HomePage(): JSX.Element {
           component="button"
           onClick={toggleHideValues}
           size="md"
+          variant="subtle"
         >
           {isHideValues ? (
             <>
