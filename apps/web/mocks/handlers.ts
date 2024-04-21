@@ -55,7 +55,8 @@ export const handlers: RequestHandler[] = [
   }),
   http.post("*/auth/v1/token", () => {
     return HttpResponse.json({
-      access_token: `token`,
+      access_token: "access_token",
+      refresh_token: "refresh_token",
       user: {
         email: "bruce.wayne@batman.com",
         user_metadata: {
@@ -71,12 +72,3 @@ export const handlers: RequestHandler[] = [
     return HttpResponse.json(accounts);
   }),
 ];
-
-/**
- * Expired Token Example Response:
- * {
- *   "code": 403,
- *   "error_code": "bad_jwt",
- *   "msg": "invalid JWT: unable to parse or verify signature, token is expired by 3h37m30s"
- * }
- */

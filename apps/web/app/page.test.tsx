@@ -1,4 +1,5 @@
 import { accounts } from "@/mocks/handlers";
+import { server } from "@/mocks/node";
 import {
   createAuthEnvironment,
   render,
@@ -8,7 +9,8 @@ import {
   waitForElementToBeRemoved,
 } from "@/test-utils";
 import { advanceTo } from "jest-date-mock";
-import HomePage from "./page";
+import { http } from "msw";
+import HomePage, { Account } from "./page";
 
 createAuthEnvironment();
 
@@ -52,6 +54,24 @@ test("shows greeting according to the time of day", async () => {
   advanceTo(new Date(2024, 4, 21, 22, 0, 0));
   rerender(<HomePage />);
   expect(screen.getByText(/boa noite/i)).toBeInTheDocument();
+});
+
+test("shows the benefits even when the access token expires", async () => {
+  server.use(
+    http.get(
+      "*/rest/v1/accounts",
+      () => Response.json({ message: "JWT expired" }, { status: 401 }),
+      { once: true }
+    )
+  );
+
+  render(<HomePage />);
+
+  const account = accounts[0] as Account;
+
+  expect(await screen.findByText(account.benefits.icon)).toBeInTheDocument();
+  expect(screen.getByText(`R$ ${account.balance},00`)).toBeInTheDocument();
+  expect(screen.getByText(account.benefits.name)).toBeInTheDocument();
 });
 
 // This test should be executed because it will log out the user
