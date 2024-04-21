@@ -163,6 +163,9 @@ importers:
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@20.11.24)
+      jest-date-mock:
+        specifier: ^1.0.10
+        version: 1.0.10
       jest-environment-jsdom:
         specifier: ^29.7.0
         version: 29.7.0
@@ -5076,6 +5079,10 @@ packages:
     transitivePeerDependencies:
       - babel-plugin-macros
       - supports-color
+    dev: true
+
+  /jest-date-mock@1.0.10:
+    resolution: {integrity: sha512-g0CM7mJHppz8SCayrtJ0Wm2ge8T0SiKCR9bmVLeflipqWjZ8hieNk6vBF0t3dJFc5jlsjvzTbRud8kPjoD0VgA==}
     dev: true
 
   /jest-diff@29.7.0:

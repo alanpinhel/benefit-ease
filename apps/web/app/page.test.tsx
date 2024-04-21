@@ -7,18 +7,19 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from "@/test-utils";
+import { advanceTo } from "jest-date-mock";
 import HomePage from "./page";
 
 createAuthEnvironment();
 
 test.each(accounts)(
-  "shows benefit '$benefit.name' when opening a homepage",
+  "shows benefit '$benefits.name' when opening a homepage",
   async (account) => {
     render(<HomePage />);
 
-    expect(await screen.findByText(account.benefit.icon)).toBeInTheDocument();
+    expect(await screen.findByText(account.benefits.icon)).toBeInTheDocument();
     expect(screen.getByText(`R$ ${account.balance},00`)).toBeInTheDocument();
-    expect(screen.getByText(account.benefit.name)).toBeInTheDocument();
+    expect(screen.getByText(account.benefits.name)).toBeInTheDocument();
   }
 );
 
@@ -35,6 +36,22 @@ test("hides values when you click the hide action button", async () => {
   userEvent.click(screen.getByRole("button", { name: /mostrar valores/i }));
   await waitForElementToBeRemoved(() => screen.queryAllByText(/🙈🙉🙊/));
   expect(screen.getByText(balance)).toBeInTheDocument();
+});
+
+test("shows greeting according to the time of day", async () => {
+  advanceTo(new Date(2024, 4, 21, 9, 0, 0));
+
+  const { rerender } = render(<HomePage />);
+
+  expect(await screen.findByText(/bom dia/i)).toBeInTheDocument();
+
+  advanceTo(new Date(2024, 4, 21, 15, 0, 0));
+  rerender(<HomePage />);
+  expect(await screen.findByText(/boa tarde/i)).toBeInTheDocument();
+
+  advanceTo(new Date(2024, 4, 21, 22, 0, 0));
+  rerender(<HomePage />);
+  expect(screen.getByText(/boa noite/i)).toBeInTheDocument();
 });
 
 // This test should be executed because it will log out the user

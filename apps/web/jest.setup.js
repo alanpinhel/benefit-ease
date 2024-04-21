@@ -1,4 +1,5 @@
 import "@testing-library/jest-dom";
+import "jest-date-mock";
 import { server } from "./mocks/node";
 
 beforeAll(() => {
