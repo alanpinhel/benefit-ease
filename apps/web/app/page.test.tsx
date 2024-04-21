@@ -5,7 +5,6 @@ import {
   render,
   screen,
   userEvent,
-  waitFor,
   waitForElementToBeRemoved,
 } from "@/test-utils";
 import { advanceTo } from "jest-date-mock";
@@ -82,7 +81,5 @@ test("logs the person out when they click log out", async () => {
 
   userEvent.click(await screen.findByRole("menuitem", { name: /sair/i }));
 
-  await waitFor(() =>
-    expect(screen.queryByText(/bom dia/i)).not.toBeInTheDocument()
-  );
+  await waitForElementToBeRemoved(() => screen.queryByText(/john doe/i));
 });
