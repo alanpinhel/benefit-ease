@@ -1,22 +1,29 @@
 "use client";
 
 import { api } from "@/lib/api";
+import { Carousel } from "@mantine/carousel";
 import {
   ActionIcon,
   Avatar,
+  Box,
+  Card,
   Group,
   Menu,
   Stack,
   Text,
+  Title,
   UnstyledButton,
   VisuallyHidden,
+  getGradient,
+  rem,
   useComputedColorScheme,
+  useMantineTheme,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconEye, IconEyeOff } from "@tabler/icons-react";
 import { formatToBRL } from "brazilian-values";
 import Link from "next/link";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { withAuth } from "./with-auth";
 
@@ -66,6 +73,7 @@ function HomePage(): JSX.Element {
   const [isHideValues, { toggle: toggleHideValues }] = useDisclosure(false);
   const computedColorScheme = useComputedColorScheme();
   const accounts = useAccounts();
+  const theme = useMantineTheme();
   const displayName = cookies.user?.display_name;
 
   const handleLogout = () => {
@@ -133,15 +141,62 @@ function HomePage(): JSX.Element {
         </ActionIcon>
       </Group>
       <Stack component="main" gap={32} pt={32} pb={48} px={24}>
-        {accounts.map((account) => (
-          <Fragment key={account.id}>
-            <span>{account.benefits.icon}</span>
-            <span>
-              {isHideValues ? "🙈🙉🙊" : formatToBRL(account.balance)}
-            </span>
-            <span>{account.benefits.name}</span>
-          </Fragment>
-        ))}
+        <Stack>
+          <Stack gap={0}>
+            <Title order={2} size="h4">
+              Benefícios
+            </Title>
+            <Text fz="sm" c="dimmed">
+              Seu saldo em tempo real.
+            </Text>
+          </Stack>
+          <Carousel
+            slideGap={8}
+            align="start"
+            slideSize={100}
+            withControls={false}
+          >
+            {accounts.map((account) => (
+              <Carousel.Slide key={account.id}>
+                <Card
+                  withBorder
+                  h={100}
+                  padding={8}
+                  pos="relative"
+                  radius={12}
+                  w={100}
+                >
+                  <Box
+                    pos="absolute"
+                    style={{ borderRadius: rem(4) }}
+                    w={84}
+                    h={30}
+                    bg={getGradient(
+                      {
+                        from: account.benefits.color_from,
+                        to: account.benefits.color_to,
+                      },
+                      theme
+                    )}
+                  />
+                  <Stack gap={6} style={{ zIndex: 1 }}>
+                    <Text fz={48} lh={1} ta="center">
+                      {account.benefits.icon}
+                    </Text>
+                    <Stack gap={0}>
+                      <Text fz="sm" fw={600} lh={rem(18)}>
+                        {isHideValues ? "🙈🙉🙊" : formatToBRL(account.balance)}
+                      </Text>
+                      <Text fz={10} lh={rem(12)} fw={600} c="dimmed">
+                        {account.benefits.name}
+                      </Text>
+                    </Stack>
+                  </Stack>
+                </Card>
+              </Carousel.Slide>
+            ))}
+          </Carousel>
+        </Stack>
       </Stack>
     </>
   );
