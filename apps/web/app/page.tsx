@@ -151,10 +151,18 @@ function HomePage(): JSX.Element {
             </Text>
           </Stack>
           <Carousel
-            slideGap={8}
             align="start"
+            containScroll="trimSnaps"
+            slideGap={8}
             slideSize={100}
             withControls={false}
+            mx={-24}
+            styles={{
+              container: {
+                marginLeft: rem(24),
+                marginRight: rem(16),
+              },
+            }}
           >
             {accounts.map((account) => (
               <Carousel.Slide key={account.id}>
