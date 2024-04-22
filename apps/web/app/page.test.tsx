@@ -18,7 +18,8 @@ test.each(accounts)(
   async (account) => {
     render(<HomePage />);
 
-    expect(await screen.findByText(account.benefits.icon)).toBeInTheDocument();
+    await waitForElementToBeRemoved(() => screen.getByText(/carregando.../i));
+    expect(screen.getByText(account.benefits.icon)).toBeInTheDocument();
     expect(screen.getByText(`R$ ${account.balance},00`)).toBeInTheDocument();
     expect(screen.getByText(account.benefits.name)).toBeInTheDocument();
   }
@@ -29,7 +30,8 @@ test("hides values when you click the hide action button", async () => {
 
   const balance = `R$ ${accounts[0]?.balance},00`;
 
-  expect(await screen.findByText(balance)).toBeInTheDocument();
+  await waitForElementToBeRemoved(() => screen.getByText(/carregando.../i));
+  expect(screen.getByText(balance)).toBeInTheDocument();
   userEvent.click(screen.getByRole("button", { name: /esconder valores/i }));
   await waitForElementToBeRemoved(() => screen.queryByText(balance));
   expect(screen.queryAllByText(/🙈🙉🙊/)).toHaveLength(4);
@@ -44,7 +46,8 @@ test("shows greeting according to the time of day", async () => {
 
   const { rerender } = render(<HomePage />);
 
-  expect(await screen.findByText(/bom dia/i)).toBeInTheDocument();
+  await waitForElementToBeRemoved(() => screen.getByText(/carregando.../i));
+  expect(screen.getByText(/bom dia/i)).toBeInTheDocument();
 
   advanceTo(new Date(2024, 4, 21, 15, 0, 0));
   rerender(<HomePage />);
@@ -68,7 +71,8 @@ test("shows the benefits even when the access token expires", async () => {
 
   const account = accounts[0] as Account;
 
-  expect(await screen.findByText(account.benefits.icon)).toBeInTheDocument();
+  await waitForElementToBeRemoved(() => screen.getByText(/carregando.../i));
+  expect(screen.getByText(account.benefits.icon)).toBeInTheDocument();
   expect(screen.getByText(`R$ ${account.balance},00`)).toBeInTheDocument();
   expect(screen.getByText(account.benefits.name)).toBeInTheDocument();
 });
@@ -77,7 +81,8 @@ test("shows the benefits even when the access token expires", async () => {
 test("logs the person out when they click log out", async () => {
   render(<HomePage />);
 
-  await userEvent.click(await screen.findByRole("button", { expanded: false }));
+  await waitForElementToBeRemoved(() => screen.getByText(/carregando.../i));
+  await userEvent.click(screen.getByRole("button", { expanded: false }));
 
   userEvent.click(await screen.findByRole("menuitem", { name: /sair/i }));
 
