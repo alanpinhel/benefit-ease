@@ -18,7 +18,7 @@
 - [Instalação](#instalação)
   - [Pré-requisitos](#pré-requisitos)
   - [Dependências](#dependências)
-- [Uso básico](#uso-básico)
+- [Uso Básico](#uso-básico)
 - [Qualidade de Código](#qualidade-de-código)
 - [Uso Específico](#uso-específico)
 - [Visão Geral](#visão-geral)

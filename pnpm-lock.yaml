@@ -69,6 +69,9 @@ importers:
       '@hookform/resolvers':
         specifier: ^3.3.4
         version: 3.3.4(react-hook-form@7.51.3)
+      '@mantine/carousel':
+        specifier: ^7.8.0
+        version: 7.8.0(@mantine/core@7.8.0)(@mantine/hooks@7.8.0)(embla-carousel-react@7.1.0)(react-dom@18.2.0)(react@18.2.0)
       '@mantine/colors-generator':
         specifier: ^7.8.0
         version: 7.8.0(chroma-js@2.4.2)
@@ -93,9 +96,15 @@ importers:
       axios:
         specifier: ^1.6.8
         version: 1.6.8
+      brazilian-values:
+        specifier: ^0.13.0
+        version: 0.13.0
       chroma-js:
         specifier: ^2.4.2
         version: 2.4.2
+      embla-carousel-react:
+        specifier: ^7.1.0
+        version: 7.1.0(react@18.2.0)
       next:
         specifier: ^14.1.1
         version: 14.1.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
@@ -160,6 +169,9 @@ importers:
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@20.11.24)
+      jest-date-mock:
+        specifier: ^1.0.10
+        version: 1.0.10
       jest-environment-jsdom:
         specifier: ^29.7.0
         version: 29.7.0
@@ -1199,6 +1211,22 @@ packages:
       '@jridgewell/resolve-uri': 3.1.1
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: true
+
+  /@mantine/carousel@7.8.0(@mantine/core@7.8.0)(@mantine/hooks@7.8.0)(embla-carousel-react@7.1.0)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-nxuLtZ4N4KJaayab5KuaffYhiVi4UaIjywkgQiNfTxABlgFdERNfo5if9sSMyisL0r3RUPJBfLkyi8A4fEC8GQ==}
+    peerDependencies:
+      '@mantine/core': 7.8.0
+      '@mantine/hooks': 7.8.0
+      embla-carousel-react: '>=7.0.0'
+      react: ^18.2.0
+      react-dom: ^18.2.0
+    dependencies:
+      '@mantine/core': 7.8.0(@mantine/hooks@7.8.0)(@types/react@18.2.61)(react-dom@18.2.0)(react@18.2.0)
+      '@mantine/hooks': 7.8.0(react@18.2.0)
+      embla-carousel-react: 7.1.0(react@18.2.0)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
 
   /@mantine/colors-generator@7.8.0(chroma-js@2.4.2):
     resolution: {integrity: sha512-qjnoBWgqPtNhPFvrCxRzUA/wT+b8aBZJr7Y9Yq2I9m1Q5VcLm6j1Ip3RbnTk0SBVBTSBGr1FD91+X8OL24s+UA==}
@@ -2774,6 +2802,10 @@ packages:
       fill-range: 7.0.1
     dev: true
 
+  /brazilian-values@0.13.0:
+    resolution: {integrity: sha512-gpEgD2+LUh0irOj2EfQsGm1uRcX+Pb+1qSLJtUYFUVkJi+NUc0uGa0TWDof36d0D+jrQpP4h8Vi5GIhT6bmjzw==}
+    dev: false
+
   /browserslist@4.22.1:
     resolution: {integrity: sha512-FEVc202+2iuClEhZhrWy6ZiAcRLvNMyYcxZ8raemul1DYVOVdFsbqckWLdsixQZCpJlwe77Z3UTalE7jsjnKfQ==}
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
@@ -3373,6 +3405,19 @@ packages:
 
   /electron-to-chromium@1.4.736:
     resolution: {integrity: sha512-Rer6wc3ynLelKNM4lOCg7/zPQj8tPOCB2hzD32PX9wd3hgRRi9MxEbmkFCokzcEhRVMiOVLjnL9ig9cefJ+6+Q==}
+
+  /embla-carousel-react@7.1.0(react@18.2.0):
+    resolution: {integrity: sha512-tbYRPRZSDNd2QLNqYDcArAakGIxtUbhS7tkP0dGXktXHGgcX+3ji3VrOUTOftBiujZrMV8kRxtrRUe/1soloIQ==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.1 || ^18.0.0
+    dependencies:
+      embla-carousel: 7.1.0
+      react: 18.2.0
+    dev: false
+
+  /embla-carousel@7.1.0:
+    resolution: {integrity: sha512-Bh8Pa8NWzgugLkf8sAGexQlBCNDFaej5BXiKgQdRJ1mUC9NWBrw9Z23YVPVGkguWoz5LMjZXXFVGCobl3UPt/Q==}
+    dev: false
 
   /emittery@0.13.1:
     resolution: {integrity: sha512-DeWwawk6r5yR9jFgnDKYt4sLS0LmHJJi3ZOnb5/JdbYwj3nW+FxQnHIjhBKz8YLC7oRNPVM9NQ47I3CVx34eqQ==}
@@ -5069,6 +5114,10 @@ packages:
     transitivePeerDependencies:
       - babel-plugin-macros
       - supports-color
+    dev: true
+
+  /jest-date-mock@1.0.10:
+    resolution: {integrity: sha512-g0CM7mJHppz8SCayrtJ0Wm2ge8T0SiKCR9bmVLeflipqWjZ8hieNk6vBF0t3dJFc5jlsjvzTbRud8kPjoD0VgA==}
     dev: true
 
   /jest-diff@29.7.0:

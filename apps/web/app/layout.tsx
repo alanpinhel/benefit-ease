@@ -1,3 +1,4 @@
+import "@mantine/carousel/styles.css";
 import { ColorSchemeScript, Container, MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
 import { Notifications } from "@mantine/notifications";

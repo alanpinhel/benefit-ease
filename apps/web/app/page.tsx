@@ -1,37 +1,267 @@
 "use client";
 
-import { Avatar, Group, Stack, Text } from "@mantine/core";
+import { api } from "@/lib/api";
+import { Carousel } from "@mantine/carousel";
+import {
+  ActionIcon,
+  Avatar,
+  Box,
+  Card,
+  Group,
+  Menu,
+  Skeleton,
+  Stack,
+  Text,
+  Title,
+  UnstyledButton,
+  VisuallyHidden,
+  getGradient,
+  rem,
+  useComputedColorScheme,
+  useMantineTheme,
+} from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { IconEye, IconEyeOff } from "@tabler/icons-react";
+import { formatToBRL } from "brazilian-values";
+import Link from "next/link";
+import { useEffect, useReducer } from "react";
 import { useCookies } from "react-cookie";
 import { withAuth } from "./with-auth";
 
+const getGreeting = () => {
+  const hours = new Date().getHours();
+  if (hours >= 6 && hours < 12) {
+    return "Bom dia";
+  }
+  if (hours >= 12 && hours < 18) {
+    return "Boa tarde";
+  }
+  return "Boa noite";
+};
+
+export type Account = {
+  id: string;
+  balance: number;
+  benefits: {
+    id: string;
+    name: string;
+    color_from: string;
+    color_to: string;
+    icon: string;
+  };
+};
+
+type Action =
+  | { type: "start get accounts" }
+  | { type: "success get accounts"; payload: Account[] }
+  | { type: "fail get accounts" };
+
+type State = {
+  accounts: Account[];
+  isError: boolean;
+  isLoading: boolean;
+};
+
+function reducer(state: State, action: Action) {
+  switch (action.type) {
+    case "start get accounts":
+      return { ...state, isLoading: true };
+    case "success get accounts":
+      return {
+        ...state,
+        accounts: action.payload,
+        isLoading: false,
+        isError: false,
+      };
+    case "fail get accounts":
+      return { ...state, isLoading: false, isError: true };
+    default:
+      return state;
+  }
+}
+
 function HomePage(): JSX.Element {
-  const [cookies, _, removeCookie] = useCookies(["access_token", "user"]);
+  const [cookies, _, removeCookie] = useCookies([
+    "access_token",
+    "user",
+    "refresh_token",
+  ]);
+  const [{ accounts, isError, isLoading }, dispatch] = useReducer(reducer, {
+    accounts: [],
+    isError: false,
+    isLoading: false,
+  });
+  const [isHideValues, { toggle: toggleHideValues }] = useDisclosure(false);
+  const computedColorScheme = useComputedColorScheme();
+  const theme = useMantineTheme();
+
+  useEffect(() => {
+    const controller = new AbortController();
+    dispatch({ type: "start get accounts" });
+    api
+      .get("/rest/v1/accounts?select=id,balance,benefits(*)", {
+        signal: controller.signal,
+      })
+      .then(({ data }) => {
+        dispatch({ type: "success get accounts", payload: data });
+      })
+      .catch(() => {
+        dispatch({ type: "fail get accounts" });
+      });
+    return () => controller.abort();
+  }, []);
+
   const displayName = cookies.user?.display_name;
+
+  const handleLogout = () => {
+    removeCookie("access_token");
+    removeCookie("refresh_token");
+    removeCookie("user");
+  };
 
   return (
     <>
       <Group
-        bg="red.8"
+        bg={computedColorScheme === "dark" ? "red.9" : "red.8"}
+        c="red.0"
         component="header"
         h={84}
         justify="space-between"
         p={24}
       >
         <Group gap={8}>
-          <Avatar size={36} color="green" variant="filled">
-            {displayName?.[0]}
-          </Avatar>
+          <Menu width={100} position="bottom-start" offset={2} radius={8}>
+            <Menu.Target>
+              <Avatar
+                color="green"
+                component={UnstyledButton}
+                size={36}
+                variant="filled"
+              >
+                {displayName?.[0]}
+              </Avatar>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item component={Link} href="/profile">
+                Perfil
+              </Menu.Item>
+              <Menu.Item onClick={handleLogout}>Sair</Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
           <Stack gap={4}>
             <Text fz="sm" c="red.1" lh={1}>
-              Bom dia 👋
+              {getGreeting()} 👋
             </Text>
             <Text fz="md" fw={600} c="red.0" lh={1}>
               {displayName}
             </Text>
           </Stack>
         </Group>
+        <ActionIcon
+          c="red.1"
+          component="button"
+          onClick={toggleHideValues}
+          size="md"
+          variant="subtle"
+        >
+          {isHideValues ? (
+            <>
+              <VisuallyHidden>Mostrar valores</VisuallyHidden>
+              <IconEye style={{ width: "70%", height: "70%" }} />
+            </>
+          ) : (
+            <>
+              <VisuallyHidden>Esconder valores</VisuallyHidden>
+              <IconEyeOff style={{ width: "70%", height: "70%" }} />
+            </>
+          )}
+        </ActionIcon>
       </Group>
-      <Stack component="main" gap={32} pt={32} pb={48} px={24}></Stack>
+      <Stack component="main" gap={32} pt={32} pb={48} px={24}>
+        <Stack>
+          <Stack gap={0}>
+            <Title order={2} size="h4">
+              Benefícios
+            </Title>
+            <Text fz="sm" c="dimmed">
+              Seu saldo em tempo real.
+            </Text>
+          </Stack>
+          {isLoading ? (
+            <Group gap={8} wrap="nowrap" style={{ overflow: "hidden" }}>
+              <VisuallyHidden>Carregando...</VisuallyHidden>
+              {[...Array(3)].map((_, index) => (
+                <Skeleton
+                  height={100}
+                  key={index}
+                  radius={12}
+                  style={{ flexShrink: 0 }}
+                  width={100}
+                />
+              ))}
+            </Group>
+          ) : isError ? (
+            <Text>Erro ao carregar benefícios.</Text>
+          ) : (
+            <Carousel
+              align="start"
+              containScroll="trimSnaps"
+              slideGap={8}
+              slideSize={100}
+              withControls={false}
+              mx={-24}
+              styles={{
+                container: {
+                  marginLeft: rem(24),
+                  marginRight: rem(16),
+                },
+              }}
+            >
+              {accounts.map((account) => (
+                <Carousel.Slide key={account.id}>
+                  <Card
+                    withBorder
+                    h={100}
+                    padding={8}
+                    pos="relative"
+                    radius={12}
+                    w={100}
+                  >
+                    <Box
+                      pos="absolute"
+                      style={{ borderRadius: rem(4) }}
+                      w={84}
+                      h={30}
+                      bg={getGradient(
+                        {
+                          from: account.benefits.color_from,
+                          to: account.benefits.color_to,
+                        },
+                        theme
+                      )}
+                    />
+                    <Stack gap={6} style={{ zIndex: 1 }}>
+                      <Text fz={48} lh={1} ta="center">
+                        {account.benefits.icon}
+                      </Text>
+                      <Stack gap={0}>
+                        <Text fz="sm" fw={600} lh={rem(18)}>
+                          {isHideValues
+                            ? "🙈🙉🙊"
+                            : formatToBRL(account.balance)}
+                        </Text>
+                        <Text fz={10} lh={rem(12)} fw={600} c="dimmed">
+                          {account.benefits.name}
+                        </Text>
+                      </Stack>
+                    </Stack>
+                  </Card>
+                </Carousel.Slide>
+              ))}
+            </Carousel>
+          )}
+        </Stack>
+      </Stack>
     </>
   );
 }

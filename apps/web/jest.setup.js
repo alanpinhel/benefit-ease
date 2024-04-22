@@ -1,10 +1,10 @@
 import "@testing-library/jest-dom";
+import "jest-date-mock";
 import { server } from "./mocks/node";
 
 beforeAll(() => {
   server.listen({ onUnhandledRequest: "error" });
 
-  window.getComputedStyle = (elt) => window.getComputedStyle(elt);
   window.HTMLElement.prototype.scrollIntoView = () => {};
 
   Object.defineProperty(window, "matchMedia", {

@@ -53,8 +53,17 @@ export function render(ui: React.ReactNode): RenderResult {
 }
 
 export function createAuthEnvironment() {
-  beforeAll(() => cookies.set("access_token", "valid-token"));
-  afterAll(() => cookies.remove("access_token"));
+  beforeAll(() => {
+    cookies.set("access_token", "access_token");
+    cookies.set("refresh_token", "refresh_token");
+    cookies.set("user", { display_name: "John Doe" });
+  });
+  afterAll(() => {
+    cookies.remove("access_token");
+    cookies.remove("refresh_token");
+    cookies.remove("user");
+  });
 }
 
 export * from "@testing-library/react";
+export * from "@testing-library/user-event";

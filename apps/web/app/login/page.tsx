@@ -23,6 +23,7 @@ type FormData = z.infer<typeof schema>;
 
 export type SignInResponse = {
   access_token: string;
+  refresh_token: string;
   user: {
     email: string;
     user_metadata: {
@@ -33,7 +34,7 @@ export type SignInResponse = {
 
 function LoginPage() {
   const [isSigningIn, setSigningIn] = useState(false);
-  const [, setCookie] = useCookies(["user", "access_token"]);
+  const [, setCookie] = useCookies(["user", "access_token", "refresh_token"]);
   const {
     register,
     handleSubmit,
@@ -54,6 +55,7 @@ function LoginPage() {
         display_name: data.user.user_metadata.display_name,
       });
       setCookie("access_token", data.access_token);
+      setCookie("refresh_token", data.refresh_token);
       api.defaults.headers.Authorization = `Bearer ${data.access_token}`;
       notifications.show({
         color: "green",
