@@ -9,6 +9,7 @@ import {
   Card,
   Group,
   Menu,
+  Skeleton,
   Stack,
   Text,
   Title,
@@ -23,9 +24,20 @@ import { useDisclosure } from "@mantine/hooks";
 import { IconEye, IconEyeOff } from "@tabler/icons-react";
 import { formatToBRL } from "brazilian-values";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useReducer } from "react";
 import { useCookies } from "react-cookie";
 import { withAuth } from "./with-auth";
+
+const getGreeting = () => {
+  const hours = new Date().getHours();
+  if (hours >= 6 && hours < 12) {
+    return "Bom dia";
+  }
+  if (hours >= 12 && hours < 18) {
+    return "Boa tarde";
+  }
+  return "Boa noite";
+};
 
 export type Account = {
   id: string;
@@ -39,30 +51,34 @@ export type Account = {
   };
 };
 
-function useAccounts() {
-  const [accounts, setAccounts] = useState<Account[]>([]);
-  useEffect(() => {
-    const controller = new AbortController();
-    api
-      .get("/rest/v1/accounts?select=id,balance,benefits(*)", {
-        signal: controller.signal,
-      })
-      .then(({ data }) => setAccounts(data));
-    return () => controller.abort();
-  }, []);
-  return accounts;
-}
+type Action =
+  | { type: "start get accounts" }
+  | { type: "success get accounts"; payload: Account[] }
+  | { type: "fail get accounts" };
 
-const getGreeting = () => {
-  const hours = new Date().getHours();
-  if (hours >= 6 && hours < 12) {
-    return "Bom dia";
-  }
-  if (hours >= 12 && hours < 18) {
-    return "Boa tarde";
-  }
-  return "Boa noite";
+type State = {
+  accounts: Account[];
+  isError: boolean;
+  isLoading: boolean;
 };
+
+function reducer(state: State, action: Action) {
+  switch (action.type) {
+    case "start get accounts":
+      return { ...state, isLoading: true };
+    case "success get accounts":
+      return {
+        ...state,
+        accounts: action.payload,
+        isLoading: false,
+        isError: false,
+      };
+    case "fail get accounts":
+      return { ...state, isLoading: false, isError: true };
+    default:
+      return state;
+  }
+}
 
 function HomePage(): JSX.Element {
   const [cookies, _, removeCookie] = useCookies([
@@ -70,10 +86,31 @@ function HomePage(): JSX.Element {
     "user",
     "refresh_token",
   ]);
+  const [{ accounts, isError, isLoading }, dispatch] = useReducer(reducer, {
+    accounts: [],
+    isError: false,
+    isLoading: false,
+  });
   const [isHideValues, { toggle: toggleHideValues }] = useDisclosure(false);
   const computedColorScheme = useComputedColorScheme();
-  const accounts = useAccounts();
   const theme = useMantineTheme();
+
+  useEffect(() => {
+    const controller = new AbortController();
+    dispatch({ type: "start get accounts" });
+    api
+      .get("/rest/v1/accounts?select=id,balance,benefits(*)", {
+        signal: controller.signal,
+      })
+      .then(({ data }) => {
+        dispatch({ type: "success get accounts", payload: data });
+      })
+      .catch(() => {
+        dispatch({ type: "fail get accounts" });
+      });
+    return () => controller.abort();
+  }, []);
+
   const displayName = cookies.user?.display_name;
 
   const handleLogout = () => {
@@ -150,60 +187,79 @@ function HomePage(): JSX.Element {
               Seu saldo em tempo real.
             </Text>
           </Stack>
-          <Carousel
-            align="start"
-            containScroll="trimSnaps"
-            slideGap={8}
-            slideSize={100}
-            withControls={false}
-            mx={-24}
-            styles={{
-              container: {
-                marginLeft: rem(24),
-                marginRight: rem(16),
-              },
-            }}
-          >
-            {accounts.map((account) => (
-              <Carousel.Slide key={account.id}>
-                <Card
-                  withBorder
-                  h={100}
-                  padding={8}
-                  pos="relative"
+          {isLoading ? (
+            <Group gap={8} wrap="nowrap" style={{ overflow: "hidden" }}>
+              <VisuallyHidden>Carregando...</VisuallyHidden>
+              {[...Array(3)].map((_, index) => (
+                <Skeleton
+                  height={100}
+                  key={index}
                   radius={12}
-                  w={100}
-                >
-                  <Box
-                    pos="absolute"
-                    style={{ borderRadius: rem(4) }}
-                    w={84}
-                    h={30}
-                    bg={getGradient(
-                      {
-                        from: account.benefits.color_from,
-                        to: account.benefits.color_to,
-                      },
-                      theme
-                    )}
-                  />
-                  <Stack gap={6} style={{ zIndex: 1 }}>
-                    <Text fz={48} lh={1} ta="center">
-                      {account.benefits.icon}
-                    </Text>
-                    <Stack gap={0}>
-                      <Text fz="sm" fw={600} lh={rem(18)}>
-                        {isHideValues ? "🙈🙉🙊" : formatToBRL(account.balance)}
+                  style={{ flexShrink: 0 }}
+                  width={100}
+                />
+              ))}
+            </Group>
+          ) : isError ? (
+            <Text>Erro ao carregar benefícios.</Text>
+          ) : (
+            <Carousel
+              align="start"
+              containScroll="trimSnaps"
+              slideGap={8}
+              slideSize={100}
+              withControls={false}
+              mx={-24}
+              styles={{
+                container: {
+                  marginLeft: rem(24),
+                  marginRight: rem(16),
+                },
+              }}
+            >
+              {accounts.map((account) => (
+                <Carousel.Slide key={account.id}>
+                  <Card
+                    withBorder
+                    h={100}
+                    padding={8}
+                    pos="relative"
+                    radius={12}
+                    w={100}
+                  >
+                    <Box
+                      pos="absolute"
+                      style={{ borderRadius: rem(4) }}
+                      w={84}
+                      h={30}
+                      bg={getGradient(
+                        {
+                          from: account.benefits.color_from,
+                          to: account.benefits.color_to,
+                        },
+                        theme
+                      )}
+                    />
+                    <Stack gap={6} style={{ zIndex: 1 }}>
+                      <Text fz={48} lh={1} ta="center">
+                        {account.benefits.icon}
                       </Text>
-                      <Text fz={10} lh={rem(12)} fw={600} c="dimmed">
-                        {account.benefits.name}
-                      </Text>
+                      <Stack gap={0}>
+                        <Text fz="sm" fw={600} lh={rem(18)}>
+                          {isHideValues
+                            ? "🙈🙉🙊"
+                            : formatToBRL(account.balance)}
+                        </Text>
+                        <Text fz={10} lh={rem(12)} fw={600} c="dimmed">
+                          {account.benefits.name}
+                        </Text>
+                      </Stack>
                     </Stack>
-                  </Stack>
-                </Card>
-              </Carousel.Slide>
-            ))}
-          </Carousel>
+                  </Card>
+                </Carousel.Slide>
+              ))}
+            </Carousel>
+          )}
         </Stack>
       </Stack>
     </>
