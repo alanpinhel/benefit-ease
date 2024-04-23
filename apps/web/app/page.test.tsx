@@ -1,4 +1,3 @@
-import { accounts } from "@/mocks/handlers";
 import { server } from "@/mocks/node";
 import {
   createAuthEnvironment,
@@ -6,39 +5,46 @@ import {
   screen,
   userEvent,
   waitForElementToBeRemoved,
+  within,
 } from "@/test-utils";
 import { advanceTo } from "jest-date-mock";
 import { http } from "msw";
-import HomePage, { Account } from "./page";
+import HomePage from "./page";
 
 createAuthEnvironment();
 
-test.each(accounts)(
-  "shows benefit '$benefits.name' when opening a homepage",
-  async (account) => {
-    render(<HomePage />);
+test("shows benefits when opening a homepage", async () => {
+  render(<HomePage />);
 
-    await waitForElementToBeRemoved(() => screen.getByText(/carregando.../i));
-    expect(screen.getByText(account.benefits.icon)).toBeInTheDocument();
-    expect(screen.getByText(`R$ ${account.balance},00`)).toBeInTheDocument();
-    expect(screen.getByText(account.benefits.name)).toBeInTheDocument();
-  }
-);
+  await waitForElementToBeRemoved(() =>
+    screen.getByText(/carregando benefícios.../i)
+  );
+
+  const accountEl1 = screen.getByTestId("account-1");
+  expect(within(accountEl1).getByText("🚘")).toBeInTheDocument();
+  expect(within(accountEl1).getByText("R$ 360,00")).toBeInTheDocument();
+  expect(within(accountEl1).getByText("Mobilidade")).toBeInTheDocument();
+
+  const accountEl2 = screen.getByTestId("account-2");
+  expect(within(accountEl2).getByText("🥦")).toBeInTheDocument();
+  expect(within(accountEl2).getByText("R$ 1.200,00")).toBeInTheDocument();
+  expect(within(accountEl2).getByText("Alimentação")).toBeInTheDocument();
+});
 
 test("hides values when you click the hide action button", async () => {
   render(<HomePage />);
 
-  const balance = `R$ ${accounts[0]?.balance},00`;
+  await waitForElementToBeRemoved(() =>
+    screen.getByText(/carregando benefícios.../i)
+  );
 
-  await waitForElementToBeRemoved(() => screen.getByText(/carregando.../i));
-  expect(screen.getByText(balance)).toBeInTheDocument();
   userEvent.click(screen.getByRole("button", { name: /esconder valores/i }));
-  await waitForElementToBeRemoved(() => screen.queryByText(balance));
+  await waitForElementToBeRemoved(() => screen.getByText("R$ 360,00"));
   expect(screen.queryAllByText(/🙈🙉🙊/)).toHaveLength(4);
 
   userEvent.click(screen.getByRole("button", { name: /mostrar valores/i }));
-  await waitForElementToBeRemoved(() => screen.queryAllByText(/🙈🙉🙊/));
-  expect(screen.getByText(balance)).toBeInTheDocument();
+  await waitForElementToBeRemoved(() => screen.getAllByText(/🙈🙉🙊/));
+  expect(screen.getByText("R$ 360,00")).toBeInTheDocument();
 });
 
 test("shows greeting according to the time of day", async () => {
@@ -46,7 +52,6 @@ test("shows greeting according to the time of day", async () => {
 
   const { rerender } = render(<HomePage />);
 
-  await waitForElementToBeRemoved(() => screen.getByText(/carregando.../i));
   expect(screen.getByText(/bom dia/i)).toBeInTheDocument();
 
   advanceTo(new Date(2024, 4, 21, 15, 0, 0));
@@ -69,22 +74,40 @@ test("shows the benefits even when the access token expires", async () => {
 
   render(<HomePage />);
 
-  const account = accounts[0] as Account;
+  await waitForElementToBeRemoved(() =>
+    screen.getByText(/carregando benefícios.../i)
+  );
 
-  await waitForElementToBeRemoved(() => screen.getByText(/carregando.../i));
-  expect(screen.getByText(account.benefits.icon)).toBeInTheDocument();
-  expect(screen.getByText(`R$ ${account.balance},00`)).toBeInTheDocument();
-  expect(screen.getByText(account.benefits.name)).toBeInTheDocument();
+  const accountEl1 = screen.getByTestId("account-1");
+  expect(within(accountEl1).getByText("🚘")).toBeInTheDocument();
+  expect(within(accountEl1).getByText("R$ 360,00")).toBeInTheDocument();
+  expect(within(accountEl1).getByText("Mobilidade")).toBeInTheDocument();
+});
+
+test("shows transaction when opening a homepage", async () => {
+  render(<HomePage />);
+
+  await waitForElementToBeRemoved(() =>
+    screen.getByText(/carregando transações.../i)
+  );
+
+  const el1 = screen.getByTestId("transaction-1");
+  expect(within(el1).getByText("Bora gastar!?")).toBeInTheDocument();
+  expect(within(el1).getByText("21/05/2024 09:00")).toBeInTheDocument();
+  expect(within(el1).getByText("R$ 1.200,00")).toBeInTheDocument();
+
+  const el2 = screen.getByTestId("transaction-2");
+  expect(within(el2).getByText("Supermercado")).toBeInTheDocument();
+  expect(within(el2).getByText("22/05/2024 09:00")).toBeInTheDocument();
+  expect(within(el2).getByText("R$ -29,21")).toBeInTheDocument();
 });
 
 // This test should be executed because it will log out the user
 test("logs the person out when they click log out", async () => {
   render(<HomePage />);
 
-  await waitForElementToBeRemoved(() => screen.getByText(/carregando.../i));
   await userEvent.click(screen.getByRole("button", { expanded: false }));
-
   userEvent.click(await screen.findByRole("menuitem", { name: /sair/i }));
 
-  await waitForElementToBeRemoved(() => screen.queryByText(/john doe/i));
+  await waitForElementToBeRemoved(() => screen.getByText(/john doe/i));
 });
