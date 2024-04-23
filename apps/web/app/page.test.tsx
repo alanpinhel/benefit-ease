@@ -40,7 +40,7 @@ test("hides values when you click the hide action button", async () => {
 
   userEvent.click(screen.getByRole("button", { name: /esconder valores/i }));
   await waitForElementToBeRemoved(() => screen.getByText("R$ 360,00"));
-  expect(screen.queryAllByText(/🙈🙉🙊/)).toHaveLength(4);
+  expect(screen.queryAllByText(/🙈🙉🙊/)).toHaveLength(7);
 
   userEvent.click(screen.getByRole("button", { name: /mostrar valores/i }));
   await waitForElementToBeRemoved(() => screen.getAllByText(/🙈🙉🙊/));

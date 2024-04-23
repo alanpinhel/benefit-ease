@@ -7,6 +7,7 @@ import {
   Avatar,
   Box,
   Card,
+  Center,
   Group,
   Menu,
   Skeleton,
@@ -85,7 +86,6 @@ export type Transaction = {
   amount: number;
   merchant: string;
   created_at: string;
-  operation: "deposit" | "payment";
   accounts: {
     benefits: {
       icon: string;
@@ -277,12 +277,14 @@ function HomePage(): JSX.Element {
             <Text>Erro ao carregar benefícios.</Text>
           ) : (
             <Carousel
+              dragFree
               align="start"
               containScroll="trimSnaps"
+              draggable={accountsState.accounts.length > 2}
+              mx={-24}
               slideGap={8}
               slideSize={100}
               withControls={false}
-              mx={-24}
               styles={{
                 container: {
                   marginLeft: rem(24),
@@ -358,17 +360,26 @@ function HomePage(): JSX.Element {
           ) : (
             <Stack>
               {transactionsState.transactions.map((transaction) => (
-                <div
+                <Group
                   key={transaction.id}
                   data-testid={`transaction-${transaction.id}`}
+                  justify="space-between"
                 >
-                  <span>{transaction.accounts.benefits.icon}</span>
-                  <span>{transaction.merchant}</span>
-                  <span>
-                    {formatToDateTime(new Date(transaction.created_at))}
-                  </span>
-                  <span>{formatToBRL(transaction.amount)}</span>
-                </div>
+                  <Group gap={8}>
+                    <Center w={24} h={24}>
+                      <Text lh={1}>{transaction.accounts.benefits.icon}</Text>
+                    </Center>
+                    <Stack gap={0}>
+                      <Text fz="xs">{transaction.merchant}</Text>
+                      <Text fz="xs" c="dimmed">
+                        {formatToDateTime(new Date(transaction.created_at))}
+                      </Text>
+                    </Stack>
+                  </Group>
+                  <Text fz="xs" fw={600}>
+                    {isHideValues ? "🙈🙉🙊" : formatToBRL(transaction.amount)}
+                  </Text>
+                </Group>
               ))}
             </Stack>
           )}

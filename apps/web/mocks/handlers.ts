@@ -76,7 +76,6 @@ export const handlers: RequestHandler[] = [
         amount: 1200,
         merchant: "Bora gastar!?",
         created_at: "2024-05-21T09:00:00",
-        operation: "deposit",
         accounts: {
           benefits: {
             icon: "🥦",
@@ -88,7 +87,6 @@ export const handlers: RequestHandler[] = [
         amount: -29.21,
         merchant: "Supermercado",
         created_at: "2024-05-22T09:00:00",
-        operation: "payment",
         accounts: {
           benefits: {
             icon: "🥦",
@@ -100,7 +98,6 @@ export const handlers: RequestHandler[] = [
         amount: -202,
         merchant: "Supermercado",
         created_at: "2024-05-23T09:00:00",
-        operation: "payment",
         accounts: {
           benefits: {
             icon: "🥦",
