@@ -22,7 +22,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconEye, IconEyeOff } from "@tabler/icons-react";
-import { formatToBRL } from "brazilian-values";
+import { formatToBRL, formatToDateTime } from "brazilian-values";
 import Link from "next/link";
 import { useEffect, useReducer } from "react";
 import { useCookies } from "react-cookie";
@@ -40,10 +40,10 @@ const getGreeting = () => {
 };
 
 export type Account = {
-  id: string;
+  id: number;
   balance: number;
   benefits: {
-    id: string;
+    id: number;
     name: string;
     color_from: string;
     color_to: string;
@@ -51,29 +51,74 @@ export type Account = {
   };
 };
 
-type Action =
-  | { type: "start get accounts" }
-  | { type: "success get accounts"; payload: Account[] }
-  | { type: "fail get accounts" };
-
-type State = {
+type AccountsState = {
   accounts: Account[];
   isError: boolean;
   isLoading: boolean;
 };
 
-function reducer(state: State, action: Action) {
+type AccountsAction =
+  | { type: "start fetch accounts" }
+  | { type: "fail fetch accounts" }
+  | { type: "success fetch accounts"; accounts: Account[] };
+
+function accountsReducer(state: AccountsState, action: AccountsAction) {
   switch (action.type) {
-    case "start get accounts":
+    case "start fetch accounts":
       return { ...state, isLoading: true };
-    case "success get accounts":
+    case "success fetch accounts":
       return {
         ...state,
-        accounts: action.payload,
+        accounts: action.accounts,
         isLoading: false,
         isError: false,
       };
-    case "fail get accounts":
+    case "fail fetch accounts":
+      return { ...state, isLoading: false, isError: true };
+    default:
+      return state;
+  }
+}
+
+export type Transaction = {
+  id: number;
+  amount: number;
+  merchant: string;
+  created_at: string;
+  operation: "deposit" | "payment";
+  accounts: {
+    benefits: {
+      icon: string;
+    };
+  };
+};
+
+type TransactionsState = {
+  transactions: Transaction[];
+  isError: boolean;
+  isLoading: boolean;
+};
+
+type TransactionsAction =
+  | { type: "start fetch transactions" }
+  | { type: "fail fetch transactions" }
+  | { type: "success fetch transactions"; transactions: Transaction[] };
+
+function transactionsReducer(
+  state: TransactionsState,
+  action: TransactionsAction
+) {
+  switch (action.type) {
+    case "start fetch transactions":
+      return { ...state, isLoading: true };
+    case "success fetch transactions":
+      return {
+        ...state,
+        transactions: action.transactions,
+        isLoading: false,
+        isError: false,
+      };
+    case "fail fetch transactions":
       return { ...state, isLoading: false, isError: true };
     default:
       return state;
@@ -86,27 +131,55 @@ function HomePage(): JSX.Element {
     "user",
     "refresh_token",
   ]);
-  const [{ accounts, isError, isLoading }, dispatch] = useReducer(reducer, {
+  const [accountsState, accountsDispatch] = useReducer(accountsReducer, {
     accounts: [],
     isError: false,
     isLoading: false,
   });
+  const [transactionsState, transactionsDispatch] = useReducer(
+    transactionsReducer,
+    {
+      transactions: [],
+      isError: false,
+      isLoading: false,
+    }
+  );
   const [isHideValues, { toggle: toggleHideValues }] = useDisclosure(false);
   const computedColorScheme = useComputedColorScheme();
   const theme = useMantineTheme();
 
   useEffect(() => {
     const controller = new AbortController();
-    dispatch({ type: "start get accounts" });
+    accountsDispatch({ type: "start fetch accounts" });
     api
-      .get("/rest/v1/accounts?select=id,balance,benefits(*)", {
+      .get(`/rest/v1/accounts?select=id,balance,benefits(*)`, {
         signal: controller.signal,
       })
-      .then(({ data }) => {
-        dispatch({ type: "success get accounts", payload: data });
+      .then(({ data: accounts }) => {
+        accountsDispatch({ type: "success fetch accounts", accounts });
       })
       .catch(() => {
-        dispatch({ type: "fail get accounts" });
+        accountsDispatch({ type: "fail fetch accounts" });
+      });
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    transactionsDispatch({ type: "start fetch transactions" });
+    api
+      .get(
+        `/rest/v1/transactions?select=id,merchant,created_at,amount,accounts(benefits(icon))&limit=5&order=created_at.desc`,
+        { signal: controller.signal }
+      )
+      .then(({ data: transactions }) => {
+        transactionsDispatch({
+          type: "success fetch transactions",
+          transactions,
+        });
+      })
+      .catch(() => {
+        transactionsDispatch({ type: "fail fetch transactions" });
       });
     return () => controller.abort();
   }, []);
@@ -187,9 +260,9 @@ function HomePage(): JSX.Element {
               Seu saldo em tempo real.
             </Text>
           </Stack>
-          {isLoading ? (
+          {accountsState.isLoading ? (
             <Group gap={8} wrap="nowrap" style={{ overflow: "hidden" }}>
-              <VisuallyHidden>Carregando...</VisuallyHidden>
+              <VisuallyHidden>Carregando benefícios...</VisuallyHidden>
               {[...Array(3)].map((_, index) => (
                 <Skeleton
                   height={100}
@@ -200,7 +273,7 @@ function HomePage(): JSX.Element {
                 />
               ))}
             </Group>
-          ) : isError ? (
+          ) : accountsState.isError ? (
             <Text>Erro ao carregar benefícios.</Text>
           ) : (
             <Carousel
@@ -217,8 +290,11 @@ function HomePage(): JSX.Element {
                 },
               }}
             >
-              {accounts.map((account) => (
-                <Carousel.Slide key={account.id}>
+              {accountsState.accounts.map((account) => (
+                <Carousel.Slide
+                  key={account.id}
+                  data-testid={`account-${account.id}`}
+                >
                   <Card
                     withBorder
                     h={100}
@@ -259,6 +335,42 @@ function HomePage(): JSX.Element {
                 </Carousel.Slide>
               ))}
             </Carousel>
+          )}
+        </Stack>
+        <Stack>
+          <Stack gap={0}>
+            <Title order={2} size="h4">
+              Transações
+            </Title>
+            <Text fz="sm" c="dimmed">
+              Últimas movimentações.
+            </Text>
+          </Stack>
+          {transactionsState.isLoading ? (
+            <Stack gap={8}>
+              <VisuallyHidden>Carregando transações...</VisuallyHidden>
+              {[...Array(5)].map((_, index) => (
+                <Skeleton height={28} key={index} radius={4} width="100%" />
+              ))}
+            </Stack>
+          ) : transactionsState.isError ? (
+            <Text>Erro ao carregar transações.</Text>
+          ) : (
+            <Stack>
+              {transactionsState.transactions.map((transaction) => (
+                <div
+                  key={transaction.id}
+                  data-testid={`transaction-${transaction.id}`}
+                >
+                  <span>{transaction.accounts.benefits.icon}</span>
+                  <span>{transaction.merchant}</span>
+                  <span>
+                    {formatToDateTime(new Date(transaction.created_at))}
+                  </span>
+                  <span>{formatToBRL(transaction.amount)}</span>
+                </div>
+              ))}
+            </Stack>
           )}
         </Stack>
       </Stack>
