@@ -18,7 +18,6 @@ import {
   VisuallyHidden,
   getGradient,
   rem,
-  useComputedColorScheme,
   useMantineTheme,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -27,6 +26,7 @@ import { formatToBRL, formatToDateTime } from "brazilian-values";
 import Link from "next/link";
 import { useEffect, useReducer } from "react";
 import { useCookies } from "react-cookie";
+import { Header } from "./header";
 import { withAuth } from "./with-auth";
 
 const getGreeting = () => {
@@ -84,7 +84,7 @@ function accountsReducer(state: AccountsState, action: AccountsAction) {
 export type Transaction = {
   id: number;
   amount: number;
-  merchant: string;
+  name: string;
   created_at: string;
   accounts: {
     benefits: {
@@ -145,7 +145,6 @@ function HomePage(): JSX.Element {
     }
   );
   const [isHideValues, { toggle: toggleHideValues }] = useDisclosure(false);
-  const computedColorScheme = useComputedColorScheme();
   const theme = useMantineTheme();
 
   useEffect(() => {
@@ -169,7 +168,7 @@ function HomePage(): JSX.Element {
     transactionsDispatch({ type: "start fetch transactions" });
     api
       .get(
-        `/rest/v1/transactions?select=id,merchant,created_at,amount,accounts(benefits(icon))&limit=5&order=created_at.desc`,
+        `/rest/v1/transactions?select=id,name,created_at,amount,accounts(benefits(icon))&limit=5&order=created_at.desc`,
         { signal: controller.signal }
       )
       .then(({ data: transactions }) => {
@@ -194,14 +193,7 @@ function HomePage(): JSX.Element {
 
   return (
     <>
-      <Group
-        bg={computedColorScheme === "dark" ? "red.9" : "red.8"}
-        c="red.0"
-        component="header"
-        h={84}
-        justify="space-between"
-        p={24}
-      >
+      <Header>
         <Group gap={8}>
           <Menu width={100} position="bottom-start" offset={2} radius={8}>
             <Menu.Target>
@@ -249,7 +241,7 @@ function HomePage(): JSX.Element {
             </>
           )}
         </ActionIcon>
-      </Group>
+      </Header>
       <Stack component="main" gap={32} pt={32} pb={48} px={24}>
         <Stack>
           <Stack gap={0}>
@@ -299,7 +291,9 @@ function HomePage(): JSX.Element {
                 >
                   <Card
                     withBorder
+                    component={Link}
                     h={100}
+                    href={`/transactions/?account_id=${account.id}`}
                     padding={8}
                     pos="relative"
                     radius={12}
@@ -370,7 +364,7 @@ function HomePage(): JSX.Element {
                       <Text lh={1}>{transaction.accounts.benefits.icon}</Text>
                     </Center>
                     <Stack gap={0}>
-                      <Text fz="xs">{transaction.merchant}</Text>
+                      <Text fz="xs">{transaction.name}</Text>
                       <Text fz="xs" c="dimmed">
                         {formatToDateTime(new Date(transaction.created_at))}
                       </Text>
