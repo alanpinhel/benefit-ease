@@ -21,14 +21,14 @@ test("shows benefits when opening a homepage", async () => {
   );
 
   const accountEl1 = screen.getByTestId("account-1");
-  expect(within(accountEl1).getByText("🚘")).toBeInTheDocument();
-  expect(within(accountEl1).getByText("R$ 360,00")).toBeInTheDocument();
-  expect(within(accountEl1).getByText("Mobilidade")).toBeInTheDocument();
+  expect(within(accountEl1).getByText("🥦")).toBeInTheDocument();
+  expect(within(accountEl1).getByText("R$ 840,00")).toBeInTheDocument();
+  expect(within(accountEl1).getByText("Alimentação")).toBeInTheDocument();
 
   const accountEl2 = screen.getByTestId("account-2");
-  expect(within(accountEl2).getByText("🥦")).toBeInTheDocument();
-  expect(within(accountEl2).getByText("R$ 1.200,00")).toBeInTheDocument();
-  expect(within(accountEl2).getByText("Alimentação")).toBeInTheDocument();
+  expect(within(accountEl2).getByText("🚘")).toBeInTheDocument();
+  expect(within(accountEl2).getByText("R$ 360,00")).toBeInTheDocument();
+  expect(within(accountEl2).getByText("Mobilidade")).toBeInTheDocument();
 });
 
 test("hides values when you click the hide action button", async () => {
@@ -40,7 +40,7 @@ test("hides values when you click the hide action button", async () => {
 
   userEvent.click(screen.getByRole("button", { name: /esconder valores/i }));
   await waitForElementToBeRemoved(() => screen.getByText("R$ 360,00"));
-  expect(screen.queryAllByText(/🙈🙉🙊/)).toHaveLength(7);
+  expect(screen.queryAllByText(/🙈🙉🙊/)).toHaveLength(6);
 
   userEvent.click(screen.getByRole("button", { name: /mostrar valores/i }));
   await waitForElementToBeRemoved(() => screen.getAllByText(/🙈🙉🙊/));
@@ -79,9 +79,9 @@ test("shows the benefits even when the access token expires", async () => {
   );
 
   const accountEl1 = screen.getByTestId("account-1");
-  expect(within(accountEl1).getByText("🚘")).toBeInTheDocument();
-  expect(within(accountEl1).getByText("R$ 360,00")).toBeInTheDocument();
-  expect(within(accountEl1).getByText("Mobilidade")).toBeInTheDocument();
+  expect(within(accountEl1).getByText("🥦")).toBeInTheDocument();
+  expect(within(accountEl1).getByText("R$ 840,00")).toBeInTheDocument();
+  expect(within(accountEl1).getByText("Alimentação")).toBeInTheDocument();
 });
 
 test("shows transaction when opening a homepage", async () => {
@@ -92,13 +92,13 @@ test("shows transaction when opening a homepage", async () => {
   );
 
   const el1 = screen.getByTestId("transaction-1");
-  expect(within(el1).getByText("Bora gastar!?")).toBeInTheDocument();
-  expect(within(el1).getByText("21/05/2024 09:00")).toBeInTheDocument();
-  expect(within(el1).getByText("R$ 1.200,00")).toBeInTheDocument();
+  expect(within(el1).getByText("Supermercado")).toBeInTheDocument();
+  expect(within(el1).getByText("22/04/2024 09:00")).toBeInTheDocument();
+  expect(within(el1).getByText("R$ -212,23")).toBeInTheDocument();
 
   const el2 = screen.getByTestId("transaction-2");
-  expect(within(el2).getByText("Supermercado")).toBeInTheDocument();
-  expect(within(el2).getByText("22/05/2024 09:00")).toBeInTheDocument();
+  expect(within(el2).getByText("Uber")).toBeInTheDocument();
+  expect(within(el2).getByText("22/01/2024 09:00")).toBeInTheDocument();
   expect(within(el2).getByText("R$ -29,21")).toBeInTheDocument();
 });
 
