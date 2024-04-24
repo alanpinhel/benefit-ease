@@ -3,6 +3,7 @@ import {
   fireEvent,
   render,
   screen,
+  userEvent,
   within,
 } from "@/test-utils";
 import { advanceTo } from "jest-date-mock";
@@ -54,9 +55,10 @@ test("only shows today's transactions", async () => {
 
   render(<TransactionsPage />);
 
-  fireEvent.click(screen.getByText("Hoje"));
+  await userEvent.click(screen.getByRole("button", { expanded: false }));
+  await userEvent.click(await screen.findByText("Hoje"));
 
-  expect(await screen.findByTestId("transaction-1")).toBeInTheDocument();
+  expect(screen.getByTestId("transaction-1")).toBeInTheDocument();
   expect(screen.queryByTestId("transaction-2")).not.toBeInTheDocument();
   expect(screen.queryByTestId("transaction-3")).not.toBeInTheDocument();
   expect(screen.queryByTestId("transaction-4")).not.toBeInTheDocument();
@@ -67,10 +69,11 @@ test("only shows transactions from yesterday", async () => {
 
   render(<TransactionsPage />);
 
-  fireEvent.click(screen.getByText("Ontem"));
+  await userEvent.click(screen.getByRole("button", { expanded: false }));
+  await userEvent.click(await screen.findByText("Ontem"));
 
-  expect(await screen.findByTestId("transaction-1")).toBeInTheDocument();
-  expect(screen.queryByTestId("transaction-2")).toBeInTheDocument();
+  expect(screen.getByTestId("transaction-1")).toBeInTheDocument();
+  expect(screen.getByTestId("transaction-2")).toBeInTheDocument();
   expect(screen.queryByTestId("transaction-3")).not.toBeInTheDocument();
   expect(screen.queryByTestId("transaction-4")).not.toBeInTheDocument();
 });
@@ -80,11 +83,12 @@ test("only shows transactions from 7 days ago", async () => {
 
   render(<TransactionsPage />);
 
-  fireEvent.click(screen.getByText("7 dias"));
+  await userEvent.click(screen.getByRole("button", { expanded: false }));
+  await userEvent.click(await screen.findByText("7 dias"));
 
-  expect(await screen.findByTestId("transaction-1")).toBeInTheDocument();
-  expect(screen.queryByTestId("transaction-2")).toBeInTheDocument();
-  expect(screen.queryByTestId("transaction-3")).toBeInTheDocument();
+  expect(screen.getByTestId("transaction-1")).toBeInTheDocument();
+  expect(screen.getByTestId("transaction-2")).toBeInTheDocument();
+  expect(screen.getByTestId("transaction-3")).toBeInTheDocument();
   expect(screen.queryByTestId("transaction-4")).not.toBeInTheDocument();
 });
 
@@ -93,10 +97,11 @@ test("only shows transactions from 14 days ago", async () => {
 
   render(<TransactionsPage />);
 
-  fireEvent.click(screen.getByText("14 dias"));
+  await userEvent.click(screen.getByRole("button", { expanded: false }));
+  await userEvent.click(await screen.findByText("14 dias"));
 
-  expect(await screen.findByTestId("transaction-1")).toBeInTheDocument();
-  expect(screen.queryByTestId("transaction-2")).toBeInTheDocument();
-  expect(screen.queryByTestId("transaction-3")).toBeInTheDocument();
-  expect(screen.queryByTestId("transaction-4")).toBeInTheDocument();
+  expect(screen.getByTestId("transaction-1")).toBeInTheDocument();
+  expect(screen.getByTestId("transaction-2")).toBeInTheDocument();
+  expect(screen.getByTestId("transaction-3")).toBeInTheDocument();
+  expect(screen.getByTestId("transaction-4")).toBeInTheDocument();
 });
