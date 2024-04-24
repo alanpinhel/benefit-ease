@@ -4,6 +4,7 @@ import { api } from "@/lib/api";
 import { Carousel } from "@mantine/carousel";
 import {
   ActionIcon,
+  Anchor,
   Avatar,
   Box,
   Card,
@@ -334,14 +335,19 @@ function HomePage(): JSX.Element {
           )}
         </Stack>
         <Stack>
-          <Stack gap={0}>
-            <Title order={2} size="h4">
-              Transações
-            </Title>
-            <Text fz="sm" c="dimmed">
-              Últimas movimentações.
-            </Text>
-          </Stack>
+          <Group justify="space-between">
+            <Stack gap={0}>
+              <Title order={2} size="h4">
+                Transações
+              </Title>
+              <Text fz="sm" c="dimmed">
+                Últimas 5 movimentações.
+              </Text>
+            </Stack>
+            <Anchor component={Link} href="/transactions" fz="xs">
+              Ver mais
+            </Anchor>
+          </Group>
           {transactionsState.isLoading ? (
             <Stack gap={8}>
               <VisuallyHidden>Carregando transações...</VisuallyHidden>
