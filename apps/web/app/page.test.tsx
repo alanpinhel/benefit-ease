@@ -98,7 +98,7 @@ test("shows transaction when opening a homepage", async () => {
 
   const el2 = screen.getByTestId("transaction-2");
   expect(within(el2).getByText("Uber")).toBeInTheDocument();
-  expect(within(el2).getByText("22/01/2024 09:00")).toBeInTheDocument();
+  expect(within(el2).getByText("21/04/2024 09:00")).toBeInTheDocument();
   expect(within(el2).getByText("R$ -29,21")).toBeInTheDocument();
 });
 

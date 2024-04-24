@@ -6,6 +6,9 @@ export const handlers: RequestHandler[] = [
   http.post("*/auth/v1/signup", () => {
     return HttpResponse.json({});
   }),
+  http.put("*/auth/v1/user", () => {
+    return HttpResponse.json({});
+  }),
   http.post("*/auth/v1/token", () => {
     return HttpResponse.json({
       access_token: "access_token",
@@ -17,9 +20,6 @@ export const handlers: RequestHandler[] = [
         },
       },
     } satisfies SignInResponse);
-  }),
-  http.put("*/auth/v1/user", () => {
-    return HttpResponse.json({});
   }),
   http.get("*/rest/v1/accounts", () => {
     return HttpResponse.json([
@@ -54,44 +54,28 @@ export const handlers: RequestHandler[] = [
         amount: -212.23,
         name: "Supermercado",
         created_at: "2024-04-22T09:00:00",
-        accounts: {
-          benefits: {
-            icon: "🥦",
-          },
-        },
+        accounts: { benefits: { icon: "🥦" } },
       },
       {
         id: 2,
         amount: -29.21,
         name: "Uber",
         created_at: "2024-04-21T09:00:00",
-        accounts: {
-          benefits: {
-            icon: "🚘",
-          },
-        },
+        accounts: { benefits: { icon: "🚘" } },
       },
       {
         id: 3,
         amount: -14.15,
         name: "Uber",
-        created_at: "2024-04-14T09:00:00",
-        accounts: {
-          benefits: {
-            icon: "🚘",
-          },
-        },
+        created_at: "2024-04-15T09:00:00",
+        accounts: { benefits: { icon: "🚘" } },
       },
       {
         id: 4,
         amount: -12,
         name: "Uber",
-        created_at: "2024-04-7T09:00:00",
-        accounts: {
-          benefits: {
-            icon: "🚘",
-          },
-        },
+        created_at: "2024-04-08T09:00:00",
+        accounts: { benefits: { icon: "🚘" } },
       },
     ] satisfies Transaction[]);
   }),
