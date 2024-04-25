@@ -102,6 +102,7 @@ function TransactionsPage(): JSX.Element {
                 { label: "14 dias", value: "14" },
               ].map(({ label, value }) => (
                 <Menu.Item
+                  key={value}
                   component="label"
                   bg={
                     watch("period") === value
