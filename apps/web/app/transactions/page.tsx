@@ -30,6 +30,10 @@ type FormData = {
   period: string;
 };
 
+function escapeRegExp(text: string) {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+}
+
 function TransactionsPage(): JSX.Element {
   const { register, watch } = useForm<FormData>();
   const params = useSearchParams();
@@ -109,7 +113,9 @@ function TransactionsPage(): JSX.Element {
         </Group>
         <Stack>
           {transactions
-            .filter((t) => new RegExp(watch("search"), "i").test(t.name))
+            .filter((t) =>
+              new RegExp(escapeRegExp(watch("search")), "i").test(t.name)
+            )
             .filter((t) => {
               if (!watch("period")) {
                 return true;
