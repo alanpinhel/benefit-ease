@@ -8,6 +8,7 @@ import {
   AppRouterContext,
   AppRouterInstance,
 } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { SearchParamsContext } from "next/dist/shared/lib/hooks-client-context.shared-runtime";
 import { CookiesProvider } from "react-cookie";
 import { cookies, defaultSetOptions } from "./lib/cookies";
 import { theme } from "./theme";
@@ -37,16 +38,35 @@ function AppRouterProviderMock({
   );
 }
 
+type SearchParamsProviderMockProps = {
+  searchParams?: URLSearchParams;
+  children: React.ReactNode;
+};
+
+function SearchParamsProviderMock({
+  searchParams,
+  children,
+}: SearchParamsProviderMockProps): React.ReactNode {
+  const mockedSearchParams = searchParams || new URLSearchParams();
+  return (
+    <SearchParamsContext.Provider value={mockedSearchParams}>
+      {children}
+    </SearchParamsContext.Provider>
+  );
+}
+
 export function render(ui: React.ReactNode): RenderResult {
   return testingLibraryRender(<>{ui}</>, {
     wrapper: ({ children }: { children: React.ReactNode }) => (
       <AppRouterProviderMock>
-        <MantineProvider theme={theme}>
-          <Notifications />
-          <CookiesProvider defaultSetOptions={defaultSetOptions}>
-            {children}
-          </CookiesProvider>
-        </MantineProvider>
+        <SearchParamsProviderMock>
+          <MantineProvider theme={theme}>
+            <Notifications />
+            <CookiesProvider defaultSetOptions={defaultSetOptions}>
+              {children}
+            </CookiesProvider>
+          </MantineProvider>
+        </SearchParamsProviderMock>
       </AppRouterProviderMock>
     ),
   });

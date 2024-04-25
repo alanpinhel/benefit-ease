@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ActionIcon,
   Button,
-  Group,
   PasswordInput,
   Stack,
   Text,
@@ -19,6 +18,7 @@ import { useState } from "react";
 import { useCookies } from "react-cookie";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
+import { Header } from "../header";
 import { withAuth } from "../with-auth";
 
 const schema = z.object({
@@ -79,14 +79,7 @@ function ProfilePage(): JSX.Element {
 
   return (
     <>
-      <Group
-        bg="red.8"
-        c="red.0"
-        component="header"
-        h={84}
-        justify="space-between"
-        p={24}
-      >
+      <Header>
         <ActionIcon
           c="red.0"
           component={Link}
@@ -100,7 +93,7 @@ function ProfilePage(): JSX.Element {
           Editar conta
         </Text>
         <ActionIcon style={{ visibility: "hidden" }} size="md" />
-      </Group>
+      </Header>
       <Stack component="main" gap={32} pt={32} pb={48} px={24}>
         <form noValidate onSubmit={handleSubmit(onSubmit)}>
           <Stack gap={24}>
