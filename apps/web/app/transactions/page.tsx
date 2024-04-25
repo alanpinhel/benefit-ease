@@ -9,6 +9,8 @@ import {
   Stack,
   Text,
   TextInput,
+  alpha,
+  useComputedColorScheme,
 } from "@mantine/core";
 import {
   IconArrowLeft,
@@ -38,6 +40,7 @@ function TransactionsPage(): JSX.Element {
   const { register, watch } = useForm<FormData>();
   const params = useSearchParams();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const colorScheme = useComputedColorScheme();
 
   const accountId = params.get("account_id");
   const accountFilter = accountId ? `&account_id=eq.${accountId}` : "";
@@ -88,40 +91,56 @@ function TransactionsPage(): JSX.Element {
           <Menu width={150} position="bottom-end" offset={2} radius={8}>
             <Menu.Target>
               <ActionIcon variant="default" size="input-md" radius="md">
-                <IconCalendarEvent stroke={1} />
+                <IconCalendarEvent />
               </ActionIcon>
             </Menu.Target>
             <Menu.Dropdown>
-              <Menu.Item component="label">
-                Hoje
-                <input hidden type="radio" value="0" {...register("period")} />
-              </Menu.Item>
-              <Menu.Item component="label">
-                Ontem
-                <input hidden type="radio" value="1" {...register("period")} />
-              </Menu.Item>
-              <Menu.Item component="label">
-                7 dias
-                <input hidden type="radio" value="7" {...register("period")} />
-              </Menu.Item>
-              <Menu.Item component="label">
-                14 dias
-                <input hidden type="radio" value="14" {...register("period")} />
-              </Menu.Item>
+              {[
+                { label: "Hoje", value: "0" },
+                { label: "Ontem", value: "1" },
+                { label: "7 dias", value: "7" },
+                { label: "14 dias", value: "14" },
+              ].map(({ label, value }) => (
+                <Menu.Item
+                  component="label"
+                  bg={
+                    watch("period") === value
+                      ? colorScheme === "dark"
+                        ? alpha("var(--mantine-color-red-9)", 0.45)
+                        : "red.0"
+                      : undefined
+                  }
+                  c={
+                    watch("period") === value
+                      ? colorScheme === "dark"
+                        ? "red.1"
+                        : "red.6"
+                      : undefined
+                  }
+                >
+                  {label}
+                  <input
+                    hidden
+                    type="radio"
+                    value={watch("period") === value ? "" : value}
+                    {...register("period")}
+                  />
+                </Menu.Item>
+              ))}
             </Menu.Dropdown>
           </Menu>
         </Group>
         <Stack>
           {transactions
-            .filter((t) =>
-              new RegExp(escapeRegExp(watch("search")), "i").test(t.name)
+            .filter(({ name }) =>
+              new RegExp(escapeRegExp(watch("search")), "i").test(name)
             )
-            .filter((t) => {
+            .filter(({ created_at }) => {
               if (!watch("period")) {
                 return true;
               }
               return (
-                new Date(t.created_at) >= subDays(new Date(), +watch("period"))
+                new Date(created_at) >= subDays(new Date(), +watch("period"))
               );
             })
             .map((transaction) => (
