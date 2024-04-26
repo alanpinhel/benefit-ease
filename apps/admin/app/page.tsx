@@ -1,8 +1,8 @@
-import Image from "next/image";
+import { Button } from "@repo/ui/button";
 import { Card } from "@repo/ui/card";
 import { Code } from "@repo/ui/code";
+import Image from "next/image";
 import styles from "./page.module.css";
-import { Button } from "@repo/ui/button";
 
 function Gradient({
   conic,
@@ -71,7 +71,7 @@ export default function Page(): JSX.Element {
               className={styles.vercelLogo}
               height={24}
               priority
-              src="/vercel.svg"
+              src="admin/vercel.svg"
               width={100}
             />
           </a>
@@ -89,7 +89,7 @@ export default function Page(): JSX.Element {
               <Image
                 alt="Turborepo"
                 height={614}
-                src="circles.svg"
+                src="admin/circles.svg"
                 width={614}
                 style={{ pointerEvents: "none" }}
               />
@@ -103,7 +103,7 @@ export default function Page(): JSX.Element {
                 alt=""
                 height={120}
                 priority
-                src="turborepo.svg"
+                src="admin/turborepo.svg"
                 width={120}
                 style={{ pointerEvents: "none" }}
               />
