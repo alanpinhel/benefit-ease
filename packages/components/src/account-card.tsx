@@ -3,6 +3,8 @@ import {
   Card,
   CardProps,
   MantineGradient,
+  Skeleton,
+  SkeletonProps,
   Stack,
   Text,
   createPolymorphicComponent,
@@ -11,6 +13,18 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { forwardRef } from "react";
+
+export function AccountCardSkeleton(props: SkeletonProps) {
+  return (
+    <Skeleton
+      height={132}
+      radius={12}
+      style={{ flexShrink: 0 }}
+      width={100}
+      {...props}
+    />
+  );
+}
 
 type AccountCardProps = {
   balance: React.ReactNode;

@@ -3,6 +3,7 @@
 import { api } from "@/lib/api";
 import { Carousel } from "@mantine/carousel";
 import {
+  Alert,
   Anchor,
   Center,
   Group,
@@ -14,7 +15,12 @@ import {
   rem,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { AccountCard, Header, withAuth } from "@repo/components";
+import {
+  AccountCard,
+  AccountCardSkeleton,
+  Header,
+  withAuth,
+} from "@repo/components";
 import { useAccounts } from "@repo/hooks";
 import { Transaction } from "@repo/types";
 import { IconEye, IconEyeOff } from "@tabler/icons-react";
@@ -114,21 +120,17 @@ function HomePage(): JSX.Element {
               Seu saldo em tempo real.
             </Text>
           </Stack>
-          {isLoadingAccounts ? (
+          {hasAccountError ? (
+            <Alert radius="md" title="Erro no servidor 😢" variant="outline">
+              Ocorreu um erro ao buscar os benefícios.
+            </Alert>
+          ) : isLoadingAccounts ? (
             <Group gap={8} wrap="nowrap" style={{ overflow: "hidden" }}>
               <VisuallyHidden>Carregando benefícios...</VisuallyHidden>
-              {[...Array(3)].map((_, index) => (
-                <Skeleton
-                  height={100}
-                  key={index}
-                  radius={12}
-                  style={{ flexShrink: 0 }}
-                  width={100}
-                />
+              {[...Array(3)].map((_, i) => (
+                <AccountCardSkeleton key={i} />
               ))}
             </Group>
-          ) : hasAccountError ? (
-            <Text>Erro ao carregar benefícios.</Text>
           ) : (
             <Carousel
               dragFree
