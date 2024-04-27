@@ -12,12 +12,12 @@ import {
   Title,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
+import { withoutAuth } from "@repo/components";
 import Image from "next/image";
 import Link from "next/link";
 import { useReducer } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { withoutAuth } from "../without-auth";
 import signUpImage from "./sign-up.svg";
 import signedUpImage from "./signed-up.svg";
 

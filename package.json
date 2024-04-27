@@ -11,7 +11,8 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "lint": "turbo lint",
     "start": "turbo start",
-    "test": "turbo test"
+    "test": "turbo test",
+    "test:watch": "turbo test:watch"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

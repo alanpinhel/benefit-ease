@@ -2,6 +2,7 @@ import "@mantine/carousel/styles.css";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
+import { ClientOnlyCookiesProvider } from "@repo/components";
 import { theme } from "../theme";
 
 export const metadata = {
@@ -25,7 +26,7 @@ export default function RootLayout({
       </head>
       <body>
         <MantineProvider defaultColorScheme="auto" theme={theme}>
-          {children}
+          <ClientOnlyCookiesProvider>{children}</ClientOnlyCookiesProvider>
         </MantineProvider>
       </body>
     </html>

@@ -28,6 +28,12 @@ beforeAll(() => {
   }
 
   window.ResizeObserver = ResizeObserver;
+
+  Object.defineProperty(window, "location", {
+    configurable: true,
+    enumerable: true,
+    value: new URL(window.location.href),
+  });
 });
 
 afterEach(() => {

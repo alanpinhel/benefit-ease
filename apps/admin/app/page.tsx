@@ -1,5 +1,15 @@
-import { Title } from "@mantine/core";
+"use client";
 
-export default function Page(): JSX.Element {
-  return <Title order={1}>Admin Page</Title>;
+import { Header, HeaderGreetings, withAuth } from "@repo/components";
+
+function HomePage(): JSX.Element {
+  return (
+    <>
+      <Header>
+        <HeaderGreetings />
+      </Header>
+    </>
+  );
 }
+
+export default withAuth(HomePage);
