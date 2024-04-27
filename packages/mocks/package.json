@@ -1,0 +1,17 @@
+{
+  "name": "@repo/mocks",
+  "version": "0.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "scripts": {
+    "lint": "eslint . --max-warnings 0"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/types": "workspace:^",
+    "@repo/typescript-config": "workspace:*"
+  },
+  "peerDependencies": {
+    "@repo/types": "workspace:^"
+  }
+}

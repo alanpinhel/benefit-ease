@@ -11,6 +11,8 @@ import {
 } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { SearchParamsContext } from "next/dist/shared/lib/hooks-client-context.shared-runtime";
 import { CookiesProvider } from "react-cookie";
+import { SWRConfig } from "swr";
+import { api } from "./lib/api";
 import { cookies, defaultSetOptions } from "./lib/cookies";
 
 type AppRouterProviderMockProps = {
@@ -55,6 +57,9 @@ function SearchParamsProviderMock({
   );
 }
 
+const fetcher = (url: string) => api.get(url).then((res) => res.data);
+const provider = () => new Map();
+
 export function render(ui: React.ReactNode): RenderResult {
   return testingLibraryRender(<>{ui}</>, {
     wrapper: ({ children }: { children: React.ReactNode }) => (
@@ -63,7 +68,9 @@ export function render(ui: React.ReactNode): RenderResult {
           <MantineProvider theme={theme}>
             <Notifications />
             <CookiesProvider defaultSetOptions={defaultSetOptions}>
-              {children}
+              <SWRConfig value={{ fetcher, provider, dedupingInterval: 0 }}>
+                {children}
+              </SWRConfig>
             </CookiesProvider>
           </MantineProvider>
         </SearchParamsProviderMock>

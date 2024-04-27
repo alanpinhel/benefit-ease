@@ -13,6 +13,7 @@ import {
   useComputedColorScheme,
 } from "@mantine/core";
 import { Header, withAuth } from "@repo/components";
+import { Transaction } from "@repo/types";
 import {
   IconArrowLeft,
   IconCalendarEvent,
@@ -24,7 +25,6 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Transaction } from "../page";
 
 type FormData = {
   search: string;
