@@ -1,15 +1,21 @@
+"use client";
+
+import { api } from "@/lib/api";
 import "@mantine/carousel/styles.css";
 import { ColorSchemeScript, Container, MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
 import { Notifications } from "@mantine/notifications";
 import "@mantine/notifications/styles.css";
-import { ClientOnlyCookiesProvider } from "@repo/components";
 import { theme } from "@repo/constants";
+import { CookiesProvider } from "react-cookie";
+import { SWRConfig } from "swr";
 
-export const metadata = {
-  title: "BenefitEase",
-  description: "Gerencie seus benefícios de forma simples e eficiente.",
+const defaultSetOptions = {
+  path: "/",
+  secure: process.env.NODE_ENV === "production",
 };
+
+const fetcher = (url: string) => api.get(url).then((res) => res.data);
 
 export default function RootLayout({
   children,
@@ -29,7 +35,11 @@ export default function RootLayout({
         <MantineProvider defaultColorScheme="auto" theme={theme}>
           <Notifications />
           <Container maw={430} px={0} size="xs">
-            <ClientOnlyCookiesProvider>{children}</ClientOnlyCookiesProvider>
+            <CookiesProvider defaultSetOptions={defaultSetOptions}>
+              <SWRConfig value={{ fetcher, errorRetryCount: 3 }}>
+                {children}
+              </SWRConfig>
+            </CookiesProvider>
           </Container>
         </MantineProvider>
       </body>
