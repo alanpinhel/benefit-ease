@@ -107,10 +107,10 @@ function HomePage(): JSX.Element {
       <Stack component="main" gap={32} pt={32} pb={48} px={24}>
         <Stack>
           <Stack gap={0}>
-            <Title order={2} size="h4">
+            <Title order={2} fz={{ base: "h3", md: "h2" }}>
               Benefícios
             </Title>
-            <Text fz="sm" c="dimmed">
+            <Text fz={{ md: "lg" }} c="dimmed">
               Seu saldo em tempo real.
             </Text>
           </Stack>
@@ -168,14 +168,14 @@ function HomePage(): JSX.Element {
         <Stack>
           <Group justify="space-between">
             <Stack gap={0}>
-              <Title order={2} size="h4">
+              <Title order={2} fz={{ base: "h3", md: "h2" }}>
                 Transações
               </Title>
-              <Text fz="sm" c="dimmed">
+              <Text fz={{ md: "lg" }} c="dimmed">
                 Últimas 5 movimentações.
               </Text>
             </Stack>
-            <Anchor component={Link} href="/transactions" fz="xs">
+            <Anchor component={Link} href="/transactions" fz="sm">
               Ver mais
             </Anchor>
           </Group>
