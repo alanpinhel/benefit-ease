@@ -89,8 +89,8 @@ function SignUpPage(): JSX.Element {
     return (
       <Stack gap={0} pb={48} px={24}>
         <Image
-          aria-hidden
           alt=""
+          aria-hidden
           src={signedUpImage}
           style={{ marginInline: "auto", width: "90%", height: "auto" }}
         />

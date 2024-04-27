@@ -89,8 +89,8 @@ function LoginPage() {
   return (
     <Stack component="main" gap={32} pt={32} pb={48} px={24}>
       <Image
-        aria-hidden
         alt=""
+        aria-hidden
         src={loginImage}
         style={{ marginInline: "auto", width: "90%", height: "auto" }}
       />
