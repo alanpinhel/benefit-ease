@@ -2,10 +2,12 @@
 
 import { Card, Container, SimpleGrid, Stack, Text, Title } from "@mantine/core";
 import { Header, HeaderGreetings, withAuth } from "@repo/components";
-import { accounts } from "@repo/mocks";
+import { useAccounts } from "@repo/hooks";
 import { formatToBRL } from "brazilian-values";
 
 function HomePage(): JSX.Element {
+  const { accounts, isLoadingAccounts, hasAccountError } = useAccounts();
+
   return (
     <>
       <Header>

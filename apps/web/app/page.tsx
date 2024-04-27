@@ -19,40 +19,12 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Header, withAuth } from "@repo/components";
-import { Account, Transaction } from "@repo/types";
+import { useAccounts } from "@repo/hooks";
+import { Transaction } from "@repo/types";
 import { IconEye, IconEyeOff } from "@tabler/icons-react";
 import { formatToBRL, formatToDateTime } from "brazilian-values";
 import Link from "next/link";
 import { useEffect, useReducer } from "react";
-
-type AccountsState = {
-  accounts: Account[];
-  isError: boolean;
-  isLoading: boolean;
-};
-
-type AccountsAction =
-  | { type: "start fetch accounts" }
-  | { type: "fail fetch accounts" }
-  | { type: "success fetch accounts"; accounts: Account[] };
-
-function accountsReducer(state: AccountsState, action: AccountsAction) {
-  switch (action.type) {
-    case "start fetch accounts":
-      return { ...state, isLoading: true };
-    case "success fetch accounts":
-      return {
-        ...state,
-        accounts: action.accounts,
-        isLoading: false,
-        isError: false,
-      };
-    case "fail fetch accounts":
-      return { ...state, isLoading: false, isError: true };
-    default:
-      return state;
-  }
-}
 
 type TransactionsState = {
   transactions: Transaction[];
@@ -87,11 +59,7 @@ function transactionsReducer(
 }
 
 function HomePage(): JSX.Element {
-  const [accountsState, accountsDispatch] = useReducer(accountsReducer, {
-    accounts: [],
-    isError: false,
-    isLoading: false,
-  });
+  const { accounts, isLoadingAccounts, hasAccountError } = useAccounts();
   const [transactionsState, transactionsDispatch] = useReducer(
     transactionsReducer,
     {
@@ -102,22 +70,6 @@ function HomePage(): JSX.Element {
   );
   const [isHideValues, { toggle: toggleHideValues }] = useDisclosure(false);
   const theme = useMantineTheme();
-
-  useEffect(() => {
-    const controller = new AbortController();
-    accountsDispatch({ type: "start fetch accounts" });
-    api
-      .get(`/rest/v1/accounts?select=id,balance,benefits(*)`, {
-        signal: controller.signal,
-      })
-      .then(({ data: accounts }) => {
-        accountsDispatch({ type: "success fetch accounts", accounts });
-      })
-      .catch(() => {
-        accountsDispatch({ type: "fail fetch accounts" });
-      });
-    return () => controller.abort();
-  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -167,7 +119,7 @@ function HomePage(): JSX.Element {
               Seu saldo em tempo real.
             </Text>
           </Stack>
-          {accountsState.isLoading ? (
+          {isLoadingAccounts ? (
             <Group gap={8} wrap="nowrap" style={{ overflow: "hidden" }}>
               <VisuallyHidden>Carregando benefícios...</VisuallyHidden>
               {[...Array(3)].map((_, index) => (
@@ -180,14 +132,14 @@ function HomePage(): JSX.Element {
                 />
               ))}
             </Group>
-          ) : accountsState.isError ? (
+          ) : hasAccountError ? (
             <Text>Erro ao carregar benefícios.</Text>
           ) : (
             <Carousel
               dragFree
               align="start"
               containScroll="trimSnaps"
-              draggable={accountsState.accounts.length > 2}
+              draggable={accounts.length > 2}
               mx={-24}
               slideGap={8}
               slideSize={100}
@@ -199,7 +151,7 @@ function HomePage(): JSX.Element {
                 },
               }}
             >
-              {accountsState.accounts.map((account) => (
+              {accounts.map((account) => (
                 <Carousel.Slide
                   key={account.id}
                   data-testid={`account-${account.id}`}
