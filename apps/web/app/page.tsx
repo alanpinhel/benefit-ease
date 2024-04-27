@@ -4,8 +4,6 @@ import { api } from "@/lib/api";
 import { Carousel } from "@mantine/carousel";
 import {
   Anchor,
-  Box,
-  Card,
   Center,
   Group,
   Skeleton,
@@ -13,12 +11,10 @@ import {
   Text,
   Title,
   VisuallyHidden,
-  getGradient,
   rem,
-  useMantineTheme,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { Header, withAuth } from "@repo/components";
+import { AccountCard, Header, withAuth } from "@repo/components";
 import { useAccounts } from "@repo/hooks";
 import { Transaction } from "@repo/types";
 import { IconEye, IconEyeOff } from "@tabler/icons-react";
@@ -69,7 +65,6 @@ function HomePage(): JSX.Element {
     }
   );
   const [isHideValues, { toggle: toggleHideValues }] = useDisclosure(false);
-  const theme = useMantineTheme();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -151,50 +146,20 @@ function HomePage(): JSX.Element {
                 },
               }}
             >
-              {accounts.map((account) => (
+              {accounts.map(({ balance, ...account }) => (
                 <Carousel.Slide
                   key={account.id}
                   data-testid={`account-${account.id}`}
                 >
-                  <Card
-                    withBorder
+                  <AccountCard
                     component={Link}
-                    h={100}
                     href={`/transactions/?account_id=${account.id}`}
-                    padding={8}
-                    pos="relative"
-                    radius={12}
-                    w={100}
-                  >
-                    <Box
-                      pos="absolute"
-                      style={{ borderRadius: rem(4) }}
-                      w={84}
-                      h={30}
-                      bg={getGradient(
-                        {
-                          from: account.benefits.color_from,
-                          to: account.benefits.color_to,
-                        },
-                        theme
-                      )}
-                    />
-                    <Stack gap={6} style={{ zIndex: 1 }}>
-                      <Text fz={48} lh={1} ta="center">
-                        {account.benefits.icon}
-                      </Text>
-                      <Stack gap={0}>
-                        <Text fz="sm" fw={600} lh={rem(18)}>
-                          {isHideValues
-                            ? "🙈🙉🙊"
-                            : formatToBRL(account.balance)}
-                        </Text>
-                        <Text fz={10} lh={rem(12)} fw={600} c="dimmed">
-                          {account.benefits.name}
-                        </Text>
-                      </Stack>
-                    </Stack>
-                  </Card>
+                    from={account.benefits.color_from}
+                    to={account.benefits.color_to}
+                    icon={account.benefits.icon}
+                    balance={isHideValues ? "🙈🙉🙊" : formatToBRL(balance)}
+                    name={account.benefits.name}
+                  />
                 </Carousel.Slide>
               ))}
             </Carousel>

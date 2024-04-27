@@ -59,7 +59,7 @@ export function HeaderGreetings() {
       <Menu width={100} position="bottom-start" offset={2} radius={8}>
         <Menu.Target>
           <Avatar
-            color="green"
+            color="orange"
             component={UnstyledButton}
             size="lg"
             variant="filled"
