@@ -38,6 +38,9 @@ importers:
       '@repo/components':
         specifier: workspace:*
         version: link:../../packages/components
+      '@repo/constants':
+        specifier: workspace:^
+        version: link:../../packages/constants
       '@tabler/icons-react':
         specifier: ^3.2.0
         version: 3.2.0(react@18.2.0)
@@ -159,6 +162,9 @@ importers:
       '@repo/components':
         specifier: workspace:*
         version: link:../../packages/components
+      '@repo/constants':
+        specifier: workspace:^
+        version: link:../../packages/constants
       '@supabase/supabase-js':
         specifier: ^2.42.3
         version: 2.42.3
@@ -295,9 +301,6 @@ importers:
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
-      next:
-        specifier: ^14.1.1
-        version: 14.1.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -308,32 +311,14 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
 
-  packages/eslint-config:
+  packages/constants:
     devDependencies:
-      '@typescript-eslint/eslint-plugin':
-        specifier: ^7.1.0
-        version: 7.1.0(@typescript-eslint/parser@7.1.0)(eslint@8.57.0)(typescript@5.3.3)
-      '@typescript-eslint/parser':
-        specifier: ^7.1.0
-        version: 7.1.0(eslint@8.57.0)(typescript@5.3.3)
-      '@vercel/style-guide':
-        specifier: ^5.2.0
-        version: 5.2.0(eslint@8.57.0)(prettier@3.2.5)(typescript@5.3.3)
-      eslint-config-prettier:
-        specifier: ^9.1.0
-        version: 9.1.0(eslint@8.57.0)
-      eslint-config-turbo:
-        specifier: ^1.12.4
-        version: 1.12.4(eslint@8.57.0)
-      eslint-plugin-only-warn:
-        specifier: ^1.1.0
-        version: 1.1.0
-      typescript:
-        specifier: ^5.3.3
-        version: 5.3.3
-
-  packages/lib:
-    devDependencies:
+      '@mantine/colors-generator':
+        specifier: ^7.8.0
+        version: 7.8.0(chroma-js@2.4.2)
+      '@mantine/core':
+        specifier: ^7.8.0
+        version: 7.8.0(@mantine/hooks@7.8.0)(@types/react@18.2.61)(react-dom@18.2.0)(react@18.2.0)
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
@@ -361,12 +346,33 @@ importers:
       react:
         specifier: ^18.2.0
         version: 18.2.0
-      react-cookie:
-        specifier: ^7.1.4
-        version: 7.1.4(react@18.2.0)
       react-dom:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
+
+  packages/eslint-config:
+    devDependencies:
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^7.1.0
+        version: 7.1.0(@typescript-eslint/parser@7.1.0)(eslint@8.57.0)(typescript@5.3.3)
+      '@typescript-eslint/parser':
+        specifier: ^7.1.0
+        version: 7.1.0(eslint@8.57.0)(typescript@5.3.3)
+      '@vercel/style-guide':
+        specifier: ^5.2.0
+        version: 5.2.0(eslint@8.57.0)(prettier@3.2.5)(typescript@5.3.3)
+      eslint-config-prettier:
+        specifier: ^9.1.0
+        version: 9.1.0(eslint@8.57.0)
+      eslint-config-turbo:
+        specifier: ^1.12.4
+        version: 1.12.4(eslint@8.57.0)
+      eslint-plugin-only-warn:
+        specifier: ^1.1.0
+        version: 1.1.0
+      typescript:
+        specifier: ^5.3.3
+        version: 5.3.3
 
   packages/typescript-config: {}
 
@@ -1324,7 +1330,6 @@ packages:
       chroma-js: ^2.4.2
     dependencies:
       chroma-js: 2.4.2
-    dev: false
 
   /@mantine/core@7.8.0(@mantine/hooks@7.8.0)(@types/react@18.2.61)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-19RKuNdJ/s8pZjy2w2rvTsl4ybi/XM6vf+Kc0WY7kpLFCvdG+/UxNi1MuJF8t2Zs0QSFeb/H5yZQNe0XPbegHw==}
@@ -2860,7 +2865,6 @@ packages:
 
   /chroma-js@2.4.2:
     resolution: {integrity: sha512-U9eDw6+wt7V8z5NncY2jJfZa+hUH8XEj8FQHgFJTrUFnJfXYf4Ml4adI2vXZOjqRDpFWtYVWypDfZwnJ+HIR4A==}
-    dev: false
 
   /ci-info@3.9.0:
     resolution: {integrity: sha512-NIxF55hv4nSqQswkAeiOi1r83xy8JldOFDTWiug55KBu9Jnblncd2U6ViHmYgHf01TPZS77NJBhBMKdWj9HQMQ==}

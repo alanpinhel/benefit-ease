@@ -3,7 +3,7 @@ import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import { ClientOnlyCookiesProvider } from "@repo/components";
-import { theme } from "../theme";
+import { theme } from "@repo/constants";
 
 export const metadata = {
   title: "BenefitEaseAdmin",

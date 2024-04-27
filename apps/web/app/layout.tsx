@@ -4,7 +4,7 @@ import "@mantine/core/styles.css";
 import { Notifications } from "@mantine/notifications";
 import "@mantine/notifications/styles.css";
 import { ClientOnlyCookiesProvider } from "@repo/components";
-import { theme } from "../theme";
+import { theme } from "@repo/constants";
 
 export const metadata = {
   title: "BenefitEase",

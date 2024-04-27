@@ -1,5 +1,6 @@
 import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
+import { theme } from "@repo/constants";
 import {
   RenderResult,
   render as testingLibraryRender,
@@ -11,7 +12,6 @@ import {
 import { SearchParamsContext } from "next/dist/shared/lib/hooks-client-context.shared-runtime";
 import { CookiesProvider } from "react-cookie";
 import { cookies, defaultSetOptions } from "./lib/cookies";
-import { theme } from "./theme";
 
 type AppRouterProviderMockProps = {
   router?: Partial<AppRouterInstance>;

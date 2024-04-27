@@ -1,5 +1,5 @@
 {
-  "name": "@repo/lib",
+  "name": "@repo/constants",
   "version": "0.0.0",
   "private": true,
   "main": "src/index.ts",
@@ -7,6 +7,8 @@
     "lint": "eslint . --max-warnings 0"
   },
   "devDependencies": {
+    "@mantine/colors-generator": "^7.8.0",
+    "@mantine/core": "^7.8.0",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/eslint": "^8.56.5",
@@ -16,13 +18,13 @@
     "eslint": "^8.57.0",
     "next": "^14.1.1",
     "react": "^18.2.0",
-    "react-cookie": "^7.1.4",
     "react-dom": "^18.2.0"
   },
   "peerDependencies": {
+    "@mantine/colors-generator": "^7.8.0",
+    "@mantine/core": "^7.8.0",
     "next": "^14.1.1",
     "react": "^18.2.0",
-    "react-cookie": "^7.1.4",
     "react-dom": "^18.2.0"
   }
 }
