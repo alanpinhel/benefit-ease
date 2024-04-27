@@ -91,7 +91,6 @@ function LoginPage() {
       <Image
         alt=""
         aria-hidden
-        priority
         src={loginImage}
         style={{ marginInline: "auto", width: "90%", height: "auto" }}
       />

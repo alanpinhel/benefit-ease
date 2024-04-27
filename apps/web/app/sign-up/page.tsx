@@ -91,7 +91,6 @@ function SignUpPage(): JSX.Element {
         <Image
           alt=""
           aria-hidden
-          priority
           src={signedUpImage}
           style={{ marginInline: "auto", width: "90%", height: "auto" }}
         />
