@@ -14,7 +14,7 @@ import {
 } from "@mantine/core";
 import { forwardRef } from "react";
 
-export function AccountCardSkeleton(props: SkeletonProps) {
+export function AccountSkeletonCard(props: SkeletonProps) {
   return (
     <Skeleton
       height={132}

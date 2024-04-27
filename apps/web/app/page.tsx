@@ -17,7 +17,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import {
   AccountCard,
-  AccountCardSkeleton,
+  AccountSkeletonCard,
   Header,
   withAuth,
 } from "@repo/components";
@@ -128,7 +128,7 @@ function HomePage(): JSX.Element {
             <Group gap={8} wrap="nowrap" style={{ overflow: "hidden" }}>
               <VisuallyHidden>Carregando benefícios...</VisuallyHidden>
               {[...Array(3)].map((_, i) => (
-                <AccountCardSkeleton key={i} />
+                <AccountSkeletonCard key={i} />
               ))}
             </Group>
           ) : (

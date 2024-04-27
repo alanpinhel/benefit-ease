@@ -12,7 +12,7 @@ import {
 } from "@mantine/core";
 import {
   AccountCard,
-  AccountCardSkeleton,
+  AccountSkeletonCard,
   Header,
   HeaderGreetings,
   withAuth,
@@ -45,7 +45,7 @@ function HomePage(): JSX.Element {
             <Group gap={8} wrap="nowrap" style={{ overflow: "hidden" }}>
               <VisuallyHidden>Carregando contas...</VisuallyHidden>
               {[...Array(3)].map((_, i) => (
-                <AccountCardSkeleton key={i} />
+                <AccountSkeletonCard key={i} />
               ))}
             </Group>
           ) : (
