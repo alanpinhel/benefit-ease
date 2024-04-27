@@ -19,22 +19,11 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Header, withAuth } from "@repo/components";
+import { Account, Transaction } from "@repo/types";
 import { IconEye, IconEyeOff } from "@tabler/icons-react";
 import { formatToBRL, formatToDateTime } from "brazilian-values";
 import Link from "next/link";
 import { useEffect, useReducer } from "react";
-
-export type Account = {
-  id: number;
-  balance: number;
-  benefits: {
-    id: number;
-    name: string;
-    color_from: string;
-    color_to: string;
-    icon: string;
-  };
-};
 
 type AccountsState = {
   accounts: Account[];
@@ -64,18 +53,6 @@ function accountsReducer(state: AccountsState, action: AccountsAction) {
       return state;
   }
 }
-
-export type Transaction = {
-  id: number;
-  amount: number;
-  name: string;
-  created_at: string;
-  accounts: {
-    benefits: {
-      icon: string;
-    };
-  };
-};
 
 type TransactionsState = {
   transactions: Transaction[];
