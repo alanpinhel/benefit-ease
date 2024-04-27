@@ -36,7 +36,7 @@ importers:
         specifier: ^7.8.0
         version: 7.8.0(react@18.2.0)
       '@repo/components':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/components
       '@repo/constants':
         specifier: workspace:^
@@ -76,10 +76,13 @@ importers:
         specifier: ^14.1.1
         version: 14.1.1
       '@repo/eslint-config':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/eslint-config
+      '@repo/types':
+        specifier: workspace:^
+        version: link:../../packages/types
       '@repo/typescript-config':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/typescript-config
       '@swc/core':
         specifier: ^1.4.13
@@ -160,7 +163,7 @@ importers:
         specifier: ^7.8.0
         version: 7.8.0(@mantine/core@7.8.0)(@mantine/hooks@7.8.0)(react-dom@18.2.0)(react@18.2.0)
       '@repo/components':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/components
       '@repo/constants':
         specifier: workspace:^
@@ -209,10 +212,13 @@ importers:
         specifier: ^14.1.1
         version: 14.1.1
       '@repo/eslint-config':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/eslint-config
+      '@repo/types':
+        specifier: workspace:^
+        version: link:../../packages/types
       '@repo/typescript-config':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/typescript-config
       '@swc/core':
         specifier: ^1.4.13
@@ -376,6 +382,55 @@ importers:
       typescript:
         specifier: ^5.3.3
         version: 5.3.3
+
+  packages/mocks:
+    dependencies:
+      '@mantine/core':
+        specifier: ^7.8.0
+        version: 7.8.0(@mantine/hooks@7.8.0)(@types/react@18.2.61)(react-dom@18.2.0)(react@18.2.0)
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/eslint':
+        specifier: ^8.56.5
+        version: 8.56.5
+      '@types/node':
+        specifier: ^20.11.24
+        version: 20.12.7
+      '@types/react':
+        specifier: ^18.2.61
+        version: 18.2.61
+      '@types/react-dom':
+        specifier: ^18.2.19
+        version: 18.2.19
+      eslint:
+        specifier: ^8.57.0
+        version: 8.57.0
+      next:
+        specifier: ^14.1.1
+        version: 14.1.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
+      react-cookie:
+        specifier: ^7.1.4
+        version: 7.1.4(react@18.2.0)
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.2.0(react@18.2.0)
+
+  packages/types:
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
 
   packages/typescript-config: {}
 

@@ -1,5 +1,5 @@
 import { SignInResponse } from "@/app/login/page";
-import { Account, Transaction } from "@/app/page";
+import { Account, Transaction } from "@repo/types";
 import { HttpResponse, RequestHandler, http } from "msw";
 
 export const handlers: RequestHandler[] = [
