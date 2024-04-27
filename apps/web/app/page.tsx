@@ -3,43 +3,26 @@
 import { api } from "@/lib/api";
 import { Carousel } from "@mantine/carousel";
 import {
-  ActionIcon,
   Anchor,
-  Avatar,
   Box,
   Card,
   Center,
   Group,
-  Menu,
   Skeleton,
   Stack,
   Text,
   Title,
-  UnstyledButton,
   VisuallyHidden,
   getGradient,
   rem,
   useMantineTheme,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { Header, withAuth } from "@repo/components";
 import { IconEye, IconEyeOff } from "@tabler/icons-react";
 import { formatToBRL, formatToDateTime } from "brazilian-values";
 import Link from "next/link";
 import { useEffect, useReducer } from "react";
-import { useCookies } from "react-cookie";
-import { Header } from "./header";
-import { withAuth } from "./with-auth";
-
-const getGreeting = () => {
-  const hours = new Date().getHours();
-  if (hours >= 6 && hours < 12) {
-    return "Bom dia";
-  }
-  if (hours >= 12 && hours < 18) {
-    return "Boa tarde";
-  }
-  return "Boa noite";
-};
 
 export type Account = {
   id: number;
@@ -127,11 +110,6 @@ function transactionsReducer(
 }
 
 function HomePage(): JSX.Element {
-  const [cookies, _, removeCookie] = useCookies([
-    "access_token",
-    "user",
-    "refresh_token",
-  ]);
   const [accountsState, accountsDispatch] = useReducer(accountsReducer, {
     accounts: [],
     isError: false,
@@ -184,64 +162,23 @@ function HomePage(): JSX.Element {
     return () => controller.abort();
   }, []);
 
-  const displayName = cookies.user?.display_name;
-
-  const handleLogout = () => {
-    removeCookie("access_token");
-    removeCookie("refresh_token");
-    removeCookie("user");
-  };
-
   return (
     <>
       <Header>
-        <Group gap={8}>
-          <Menu width={100} position="bottom-start" offset={2} radius={8}>
-            <Menu.Target>
-              <Avatar
-                color="green"
-                component={UnstyledButton}
-                size={36}
-                variant="filled"
-              >
-                {displayName?.[0]}
-              </Avatar>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item component={Link} href="/profile">
-                Perfil
-              </Menu.Item>
-              <Menu.Item onClick={handleLogout}>Sair</Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
-          <Stack gap={4}>
-            <Text fz="sm" c="red.1" lh={1}>
-              {getGreeting()} 👋
-            </Text>
-            <Text fz="md" fw={600} c="red.0" lh={1}>
-              {displayName}
-            </Text>
-          </Stack>
-        </Group>
-        <ActionIcon
-          c="red.1"
-          component="button"
-          onClick={toggleHideValues}
-          size="md"
-          variant="subtle"
-        >
+        <Header.Greetings />
+        <Header.ActionIcon onClick={toggleHideValues}>
           {isHideValues ? (
             <>
               <VisuallyHidden>Mostrar valores</VisuallyHidden>
-              <IconEye style={{ width: "70%", height: "70%" }} />
+              <IconEye stroke={1.25} />
             </>
           ) : (
             <>
               <VisuallyHidden>Esconder valores</VisuallyHidden>
-              <IconEyeOff style={{ width: "70%", height: "70%" }} />
+              <IconEyeOff stroke={1.25} />
             </>
           )}
-        </ActionIcon>
+        </Header.ActionIcon>
       </Header>
       <Stack component="main" gap={32} pt={32} pb={48} px={24}>
         <Stack>

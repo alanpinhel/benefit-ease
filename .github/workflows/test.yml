@@ -4,6 +4,10 @@ on:
     branches: main
   pull_request:
 
+env:
+  NEXT_PUBLIC_ADMIN_URL: http://localhost:3001
+  NEXT_PUBLIC_WEB_URL: http://localhost:3000
+
 jobs:
   test:
     name: Test

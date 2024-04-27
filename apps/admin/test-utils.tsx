@@ -1,5 +1,4 @@
 import { MantineProvider } from "@mantine/core";
-import { Notifications } from "@mantine/notifications";
 import { theme } from "@repo/constants";
 import {
   RenderResult,
@@ -61,7 +60,6 @@ export function render(ui: React.ReactNode): RenderResult {
       <AppRouterProviderMock>
         <SearchParamsProviderMock>
           <MantineProvider theme={theme}>
-            <Notifications />
             <CookiesProvider defaultSetOptions={defaultSetOptions}>
               {children}
             </CookiesProvider>

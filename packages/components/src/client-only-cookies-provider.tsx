@@ -1,10 +1,18 @@
 "use client";
 
-import { defaultSetOptions } from "@/lib/cookies";
 import { useEffect, useState } from "react";
 import { CookiesProvider } from "react-cookie";
 
-export function ClientOnly({ children }: { children: React.ReactNode }) {
+const defaultSetOptions = {
+  path: "/",
+  secure: process.env.NODE_ENV === "production",
+};
+
+export function ClientOnlyCookiesProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {

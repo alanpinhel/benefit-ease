@@ -4,6 +4,7 @@ import { api } from "@/lib/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Anchor, Button, Stack, Text, TextInput, Title } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
+import { withoutAuth } from "@repo/components";
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,7 +12,6 @@ import { useState } from "react";
 import { useCookies } from "react-cookie";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { withoutAuth } from "../without-auth";
 import loginImage from "./login.svg";
 
 const schema = z.object({

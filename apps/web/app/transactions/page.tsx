@@ -12,6 +12,7 @@ import {
   alpha,
   useComputedColorScheme,
 } from "@mantine/core";
+import { Header, withAuth } from "@repo/components";
 import {
   IconArrowLeft,
   IconCalendarEvent,
@@ -23,9 +24,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Header } from "../header";
 import { Transaction } from "../page";
-import { withAuth } from "../with-auth";
 
 type FormData = {
   search: string;
@@ -63,19 +62,11 @@ function TransactionsPage(): JSX.Element {
   return (
     <>
       <Header>
-        <ActionIcon
-          c="red.0"
-          component={Link}
-          href="/"
-          size="md"
-          variant="transparent"
-        >
-          <IconArrowLeft size={20} />
-        </ActionIcon>
-        <Text ta="center" fz="md" fw={600}>
-          Transações
-        </Text>
-        <ActionIcon style={{ visibility: "hidden" }} size="md" />
+        <Header.ActionIcon component={Link} href="/">
+          <IconArrowLeft stroke={1.25} />
+        </Header.ActionIcon>
+        <Header.Title>Transações</Header.Title>
+        <Header.ActionIcon style={{ visibility: "hidden" }} />
       </Header>
       <Stack component="main" gap={32} pt={32} pb={48} px={24}>
         <Group gap={8}>

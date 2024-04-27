@@ -2,15 +2,9 @@
 
 import { api } from "@/lib/api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  ActionIcon,
-  Button,
-  PasswordInput,
-  Stack,
-  Text,
-  TextInput,
-} from "@mantine/core";
+import { Button, PasswordInput, Stack, TextInput } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
+import { Header, withAuth } from "@repo/components";
 import { IconArrowLeft } from "@tabler/icons-react";
 import axios from "axios";
 import Link from "next/link";
@@ -18,8 +12,6 @@ import { useState } from "react";
 import { useCookies } from "react-cookie";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { Header } from "../header";
-import { withAuth } from "../with-auth";
 
 const schema = z.object({
   display_name: z.string().min(2, { message: "Mínimo de 2 caracteres." }),
@@ -80,19 +72,11 @@ function ProfilePage(): JSX.Element {
   return (
     <>
       <Header>
-        <ActionIcon
-          c="red.0"
-          component={Link}
-          href="/"
-          size="md"
-          variant="transparent"
-        >
-          <IconArrowLeft size={20} />
-        </ActionIcon>
-        <Text ta="center" fz="md" fw={600}>
-          Editar conta
-        </Text>
-        <ActionIcon style={{ visibility: "hidden" }} size="md" />
+        <Header.ActionIcon component={Link} href="/">
+          <IconArrowLeft stroke={1.25} />
+        </Header.ActionIcon>
+        <Header.Title>Editar conta</Header.Title>
+        <Header.ActionIcon style={{ visibility: "hidden" }} />
       </Header>
       <Stack component="main" gap={32} pt={32} pb={48} px={24}>
         <form noValidate onSubmit={handleSubmit(onSubmit)}>

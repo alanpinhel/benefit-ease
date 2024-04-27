@@ -3,8 +3,8 @@ import { ColorSchemeScript, Container, MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
 import { Notifications } from "@mantine/notifications";
 import "@mantine/notifications/styles.css";
-import { theme } from "../theme";
-import { ClientOnly } from "./client-only";
+import { ClientOnlyCookiesProvider } from "@repo/components";
+import { theme } from "@repo/constants";
 
 export const metadata = {
   title: "BenefitEase",
@@ -29,7 +29,7 @@ export default function RootLayout({
         <MantineProvider defaultColorScheme="auto" theme={theme}>
           <Notifications />
           <Container maw={430} px={0} size="xs">
-            <ClientOnly>{children}</ClientOnly>
+            <ClientOnlyCookiesProvider>{children}</ClientOnlyCookiesProvider>
           </Container>
         </MantineProvider>
       </body>
