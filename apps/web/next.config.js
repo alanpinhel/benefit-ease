@@ -4,8 +4,8 @@ module.exports = {
   async rewrites() {
     return [
       {
-        source: "/admin/:path*",
-        destination: `${process.env.NEXT_PUBLIC_ADMIN_URL}/admin/:path*`,
+        source: "/:path*",
+        destination: `${process.env.NEXT_PUBLIC_ADMIN_URL}/:path*`,
       },
     ];
   },
