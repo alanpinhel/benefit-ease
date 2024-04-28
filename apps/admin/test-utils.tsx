@@ -1,4 +1,6 @@
 import { MantineProvider } from "@mantine/core";
+import { ModalsProvider } from "@mantine/modals";
+import { Notifications } from "@mantine/notifications";
 import { theme } from "@repo/constants";
 import {
   RenderResult,
@@ -8,7 +10,10 @@ import {
   AppRouterContext,
   AppRouterInstance,
 } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import { SearchParamsContext } from "next/dist/shared/lib/hooks-client-context.shared-runtime";
+import {
+  PathParamsContext,
+  SearchParamsContext,
+} from "next/dist/shared/lib/hooks-client-context.shared-runtime";
 import { CookiesProvider } from "react-cookie";
 import { SWRConfig } from "swr";
 import { api } from "./lib/api";
@@ -56,6 +61,23 @@ function SearchParamsProviderMock({
   );
 }
 
+type PathParamsProviderMockProps = {
+  params?: Record<string, string>;
+  children: React.ReactNode;
+};
+
+export function PathParamsProviderMock({
+  params,
+  children,
+}: PathParamsProviderMockProps): React.ReactNode {
+  const mockedParams = params || {};
+  return (
+    <PathParamsContext.Provider value={mockedParams}>
+      {children}
+    </PathParamsContext.Provider>
+  );
+}
+
 const fetcher = (url: string) => api.get(url).then((res) => res.data);
 const provider = () => new Map();
 
@@ -63,15 +85,20 @@ export function render(ui: React.ReactNode): RenderResult {
   return testingLibraryRender(<>{ui}</>, {
     wrapper: ({ children }: { children: React.ReactNode }) => (
       <AppRouterProviderMock>
-        <SearchParamsProviderMock>
-          <MantineProvider theme={theme}>
-            <CookiesProvider defaultSetOptions={defaultSetOptions}>
-              <SWRConfig value={{ fetcher, provider, dedupingInterval: 0 }}>
-                {children}
-              </SWRConfig>
-            </CookiesProvider>
-          </MantineProvider>
-        </SearchParamsProviderMock>
+        <PathParamsProviderMock>
+          <SearchParamsProviderMock>
+            <MantineProvider theme={theme}>
+              <ModalsProvider>
+                <Notifications />
+                <CookiesProvider defaultSetOptions={defaultSetOptions}>
+                  <SWRConfig value={{ fetcher, provider, dedupingInterval: 0 }}>
+                    {children}
+                  </SWRConfig>
+                </CookiesProvider>
+              </ModalsProvider>
+            </MantineProvider>
+          </SearchParamsProviderMock>
+        </PathParamsProviderMock>
       </AppRouterProviderMock>
     ),
   });
