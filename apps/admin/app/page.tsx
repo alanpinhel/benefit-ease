@@ -4,10 +4,12 @@ import {
   Alert,
   Container,
   Group,
+  Menu,
   SimpleGrid,
   Stack,
   Text,
   Title,
+  Tooltip,
   VisuallyHidden,
 } from "@mantine/core";
 import {
@@ -19,9 +21,35 @@ import {
 } from "@repo/components";
 import { useAccounts } from "@repo/hooks";
 import { formatToBRL } from "brazilian-values";
+import { useMemo } from "react";
+import useSWRImmutable from "swr/immutable";
+
+export type Benefit = {
+  id: number;
+  name: string;
+  icon: string;
+};
+
+function useBenefits() {
+  const response = useSWRImmutable<Benefit[]>(
+    "/rest/v1/benefits?select=id,name,icon"
+  );
+  return {
+    benefits: response.data || [],
+    hasErrorBenefits: !!response.error,
+    isLoadingBenefits: response.isLoading,
+  };
+}
 
 function HomePage(): JSX.Element {
-  const { accounts, isLoadingAccounts, hasErrorLoadingAccount } = useAccounts();
+  const { accounts, hasErrorAccounts, isLoadingAccounts } = useAccounts();
+  const { benefits, hasErrorBenefits, isLoadingBenefits } = useBenefits();
+
+  const availableBenefits = useMemo(
+    () => benefits.filter((b) => !accounts.some((a) => a.benefits.id === b.id)),
+    [accounts, benefits]
+  );
+
   return (
     <>
       <Header>
@@ -37,7 +65,7 @@ function HomePage(): JSX.Element {
               Administre seus benefícios.
             </Text>
           </Stack>
-          {hasErrorLoadingAccount ? (
+          {hasErrorAccounts ? (
             <Alert radius="md" title="Erro no servidor 😢" variant="outline">
               Ocorreu um erro ao buscar as contas de benefício.
             </Alert>
@@ -64,6 +92,25 @@ function HomePage(): JSX.Element {
                   balance={formatToBRL(balance)}
                 />
               ))}
+              {hasErrorBenefits ? (
+                <Tooltip withArrow label="Adição indisponível">
+                  <button disabled>Adicionar conta</button>
+                </Tooltip>
+              ) : isLoadingBenefits ? (
+                <div>
+                  <VisuallyHidden>Carregando benefícios...</VisuallyHidden>
+                  <AccountSkeletonCard />
+                </div>
+              ) : availableBenefits.length > 0 ? (
+                <Menu>
+                  <Menu.Target>
+                    <button>Adicionar conta</button>
+                  </Menu.Target>
+                  {availableBenefits.map((b) => (
+                    <Menu.Item key={0}>{`${b.icon} ${b.name}`}</Menu.Item>
+                  ))}
+                </Menu>
+              ) : null}
             </SimpleGrid>
           )}
         </Stack>
