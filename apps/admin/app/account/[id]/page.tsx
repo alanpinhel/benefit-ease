@@ -54,7 +54,7 @@ function useDeleteAccount(id: number) {
 
 function AccountPage(): JSX.Element {
   const { id } = useParams<{ id: string }>();
-  const { accounts, hasErrorLoadingAccount, isLoadingAccounts } = useAccounts();
+  const { accounts, hasErrorAccounts, isLoadingAccounts } = useAccounts();
   const { deleteAccount, isDeletingAccount } = useDeleteAccount(+id);
   const theme = useMantineTheme();
   const account = useMemo(() => accounts.find((a) => a.id === +id), [accounts]);
@@ -72,8 +72,8 @@ function AccountPage(): JSX.Element {
       onConfirm: deleteAccount,
     });
 
-  if (hasErrorLoadingAccount) {
-    return <>hasErrorLoadingAccount</>;
+  if (hasErrorAccounts) {
+    return <>hasErrorAccounts</>;
   }
 
   if (isLoadingAccounts) {
