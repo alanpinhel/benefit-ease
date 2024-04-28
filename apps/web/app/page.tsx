@@ -6,6 +6,7 @@ import {
   Alert,
   Anchor,
   Center,
+  Flex,
   Group,
   Skeleton,
   Stack,
@@ -125,8 +126,8 @@ function HomePage(): JSX.Element {
               Ocorreu um erro ao buscar os benefícios.
             </Alert>
           ) : isLoadingAccounts ? (
-            <Group
-              gap={8}
+            <Flex
+              gap={{ base: 8, xs: 16, md: 24 }}
               mr={-24}
               style={{ overflow: "hidden" }}
               wrap="nowrap"
@@ -135,7 +136,7 @@ function HomePage(): JSX.Element {
               {[...Array(3)].map((_, i) => (
                 <AccountSkeletonCard key={i} />
               ))}
-            </Group>
+            </Flex>
           ) : accounts.length === 0 ? (
             <Alert radius="md" variant="light" color="gray">
               Você ainda não possui benefícios cadastrados.
