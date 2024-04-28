@@ -310,12 +310,18 @@ importers:
       '@mantine/core':
         specifier: ^7.8.0
         version: 7.8.0(@mantine/hooks@7.8.0)(@types/react@18.2.61)(react-dom@18.2.0)(react@18.2.0)
+      '@mantine/hooks':
+        specifier: ^7.8.0
+        version: 7.8.0(react@18.2.0)
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@tabler/icons-react':
+        specifier: ^3.2.0
+        version: 3.2.0(react@18.2.0)
       '@types/eslint':
         specifier: ^8.56.5
         version: 8.56.5
@@ -1889,11 +1895,9 @@ packages:
     dependencies:
       '@tabler/icons': 3.2.0
       react: 18.2.0
-    dev: false
 
   /@tabler/icons@3.2.0:
     resolution: {integrity: sha512-h8GQ2rtxgiSjltrVz4vcopAxTPSpUSUi5nBfJ09H3Bk4fJk6wZ/dVUjzhv/BHfDwGTkAxZBiYe/Q/T95cPeg5Q==}
-    dev: false
 
   /@testing-library/dom@10.0.0:
     resolution: {integrity: sha512-PmJPnogldqoVFf+EwbHvbBJ98MmqASV8kLrBYgsDNxQcFMeIS7JFL48sfyXvuMtgmWO/wMhh25odr+8VhDmn4g==}
