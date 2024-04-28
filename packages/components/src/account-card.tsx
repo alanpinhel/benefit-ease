@@ -20,7 +20,7 @@ export function AccountSkeletonCard(props: SkeletonProps) {
       height={132}
       radius={12}
       style={{ flexShrink: 0 }}
-      width={100}
+      width={132}
       {...props}
     />
   );
