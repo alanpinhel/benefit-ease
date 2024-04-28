@@ -1,12 +1,5 @@
-import { Benefit } from "@/app/page";
-import { accounts, transactions } from "@repo/mocks";
+import { accounts, benefits, transactions } from "@repo/mocks";
 import { HttpResponse, RequestHandler, http } from "msw";
-
-export const benefits: Benefit[] = [
-  { id: 1, name: "Alimentação", icon: "🥦" },
-  { id: 2, name: "Mobilidade", icon: "🚘" },
-  { id: 3, name: "Saúde", icon: "🩺" },
-];
 
 export const handlers: RequestHandler[] = [
   http.get("*/rest/v1/accounts", () => {
