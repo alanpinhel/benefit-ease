@@ -61,7 +61,7 @@ function transactionsReducer(
 }
 
 function HomePage(): JSX.Element {
-  const { accounts, isLoadingAccounts, hasAccountError } = useAccounts();
+  const { accounts, isLoadingAccounts, hasErrorLoadingAccount } = useAccounts();
   const [transactionsState, transactionsDispatch] = useReducer(
     transactionsReducer,
     {
@@ -120,7 +120,7 @@ function HomePage(): JSX.Element {
               Seu saldo em tempo real.
             </Text>
           </Stack>
-          {hasAccountError ? (
+          {hasErrorLoadingAccount ? (
             <Alert radius="md" title="Erro no servidor 😢" variant="outline">
               Ocorreu um erro ao buscar os benefícios.
             </Alert>

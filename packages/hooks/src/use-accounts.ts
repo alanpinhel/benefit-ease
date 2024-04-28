@@ -7,7 +7,8 @@ export function useAccounts() {
   );
   return {
     accounts: response.data || [],
-    hasAccountError: !!response.error,
+    hasErrorLoadingAccount: !!response.error,
     isLoadingAccounts: response.isLoading,
+    ...response,
   };
 }
