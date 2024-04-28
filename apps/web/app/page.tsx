@@ -125,12 +125,21 @@ function HomePage(): JSX.Element {
               Ocorreu um erro ao buscar os benefícios.
             </Alert>
           ) : isLoadingAccounts ? (
-            <Group gap={8} wrap="nowrap" style={{ overflow: "hidden" }}>
+            <Group
+              gap={8}
+              mr={-24}
+              style={{ overflow: "hidden" }}
+              wrap="nowrap"
+            >
               <VisuallyHidden>Carregando benefícios...</VisuallyHidden>
               {[...Array(3)].map((_, i) => (
                 <AccountSkeletonCard key={i} />
               ))}
             </Group>
+          ) : accounts.length === 0 ? (
+            <Alert radius="md" variant="light" color="gray">
+              Você ainda não possui benefícios cadastrados.
+            </Alert>
           ) : (
             <Carousel
               dragFree
@@ -190,6 +199,10 @@ function HomePage(): JSX.Element {
             </Stack>
           ) : transactionsState.isError ? (
             <Text>Erro ao carregar transações.</Text>
+          ) : transactionsState.transactions.length === 0 ? (
+            <Alert radius="md" variant="light" color="gray">
+              Não há transações recentes.
+            </Alert>
           ) : (
             <Stack>
               {transactionsState.transactions.map((transaction) => (
