@@ -68,7 +68,7 @@ function TransactionsPage(): JSX.Element {
         <Header.Title>Transações</Header.Title>
         <Header.ActionIcon style={{ visibility: "hidden" }} />
       </Header>
-      <Stack component="main" gap={32} pt={32} pb={48} px={24}>
+      <Stack component="main" pt={32} pb={48} px={24}>
         <Group gap={8}>
           <TextInput
             aria-label="Pesquisar"
@@ -82,7 +82,7 @@ function TransactionsPage(): JSX.Element {
           <Menu width={150} position="bottom-end" offset={2} radius={8}>
             <Menu.Target>
               <ActionIcon variant="default" size="input-md" radius="md">
-                <IconCalendarEvent />
+                <IconCalendarEvent stroke={1.25} />
               </ActionIcon>
             </Menu.Target>
             <Menu.Dropdown>
