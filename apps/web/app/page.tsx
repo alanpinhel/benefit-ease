@@ -174,7 +174,7 @@ function HomePage(): JSX.Element {
                 Transações
               </Title>
               <Text fz={{ md: "lg" }} c="dimmed">
-                Últimas 5 movimentações.
+                Últimas movimentações.
               </Text>
             </Stack>
             <Anchor component={Link} href="/transactions" fz="sm">
