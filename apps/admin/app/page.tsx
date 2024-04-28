@@ -12,7 +12,7 @@ import {
 } from "@mantine/core";
 import {
   AccountCard,
-  AccountCardSkeleton,
+  AccountSkeletonCard,
   Header,
   HeaderGreetings,
   withAuth,
@@ -21,7 +21,7 @@ import { useAccounts } from "@repo/hooks";
 import { formatToBRL } from "brazilian-values";
 
 function HomePage(): JSX.Element {
-  const { accounts, isLoadingAccounts, hasAccountError } = useAccounts();
+  const { accounts, isLoadingAccounts, hasErrorLoadingAccount } = useAccounts();
   return (
     <>
       <Header>
@@ -37,7 +37,7 @@ function HomePage(): JSX.Element {
               Administre seus benefícios.
             </Text>
           </Stack>
-          {hasAccountError ? (
+          {hasErrorLoadingAccount ? (
             <Alert radius="md" title="Erro no servidor 😢" variant="outline">
               Ocorreu um erro ao buscar as contas de benefício.
             </Alert>
@@ -45,7 +45,7 @@ function HomePage(): JSX.Element {
             <Group gap={8} wrap="nowrap" style={{ overflow: "hidden" }}>
               <VisuallyHidden>Carregando contas...</VisuallyHidden>
               {[...Array(3)].map((_, i) => (
-                <AccountCardSkeleton key={i} />
+                <AccountSkeletonCard key={i} />
               ))}
             </Group>
           ) : (

@@ -17,7 +17,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import {
   AccountCard,
-  AccountCardSkeleton,
+  AccountSkeletonCard,
   Header,
   withAuth,
 } from "@repo/components";
@@ -61,7 +61,7 @@ function transactionsReducer(
 }
 
 function HomePage(): JSX.Element {
-  const { accounts, isLoadingAccounts, hasAccountError } = useAccounts();
+  const { accounts, isLoadingAccounts, hasErrorLoadingAccount } = useAccounts();
   const [transactionsState, transactionsDispatch] = useReducer(
     transactionsReducer,
     {
@@ -120,17 +120,26 @@ function HomePage(): JSX.Element {
               Seu saldo em tempo real.
             </Text>
           </Stack>
-          {hasAccountError ? (
+          {hasErrorLoadingAccount ? (
             <Alert radius="md" title="Erro no servidor 😢" variant="outline">
               Ocorreu um erro ao buscar os benefícios.
             </Alert>
           ) : isLoadingAccounts ? (
-            <Group gap={8} wrap="nowrap" style={{ overflow: "hidden" }}>
+            <Group
+              gap={8}
+              mr={-24}
+              style={{ overflow: "hidden" }}
+              wrap="nowrap"
+            >
               <VisuallyHidden>Carregando benefícios...</VisuallyHidden>
               {[...Array(3)].map((_, i) => (
-                <AccountCardSkeleton key={i} />
+                <AccountSkeletonCard key={i} />
               ))}
             </Group>
+          ) : accounts.length === 0 ? (
+            <Alert radius="md" variant="light" color="gray">
+              Você ainda não possui benefícios cadastrados.
+            </Alert>
           ) : (
             <Carousel
               dragFree
@@ -174,7 +183,7 @@ function HomePage(): JSX.Element {
                 Transações
               </Title>
               <Text fz={{ md: "lg" }} c="dimmed">
-                Últimas 5 movimentações.
+                Últimas movimentações.
               </Text>
             </Stack>
             <Anchor component={Link} href="/transactions" fz="sm">
@@ -190,6 +199,10 @@ function HomePage(): JSX.Element {
             </Stack>
           ) : transactionsState.isError ? (
             <Text>Erro ao carregar transações.</Text>
+          ) : transactionsState.transactions.length === 0 ? (
+            <Alert radius="md" variant="light" color="gray">
+              Não há transações recentes.
+            </Alert>
           ) : (
             <Stack>
               {transactionsState.transactions.map((transaction) => (

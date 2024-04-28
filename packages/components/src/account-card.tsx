@@ -14,13 +14,13 @@ import {
 } from "@mantine/core";
 import { forwardRef } from "react";
 
-export function AccountCardSkeleton(props: SkeletonProps) {
+export function AccountSkeletonCard(props: SkeletonProps) {
   return (
     <Skeleton
       height={132}
       radius={12}
       style={{ flexShrink: 0 }}
-      width={100}
+      width={132}
       {...props}
     />
   );

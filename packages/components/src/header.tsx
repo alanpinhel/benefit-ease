@@ -91,7 +91,14 @@ export const HeaderActionIcon = createPolymorphicComponent<
 >(
   forwardRef<HTMLButtonElement, ActionIconProps>(
     ({ children, ...rest }, ref) => (
-      <ActionIcon c="white" size="lg" variant="subtle" {...rest} ref={ref}>
+      <ActionIcon
+        c="white"
+        loaderProps={{ color: "white" }}
+        size="lg"
+        variant="subtle"
+        {...rest}
+        ref={ref}
+      >
         {children}
       </ActionIcon>
     )
