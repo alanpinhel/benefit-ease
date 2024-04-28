@@ -4,6 +4,8 @@ import { api } from "@/lib/api";
 import "@mantine/carousel/styles.css";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
+import { ModalsProvider } from "@mantine/modals";
+import { Notifications } from "@mantine/notifications";
 import "@mantine/notifications/styles.css";
 import { theme } from "@repo/constants";
 import { CookiesProvider } from "react-cookie";
@@ -32,11 +34,14 @@ export default function RootLayout({
       </head>
       <body>
         <MantineProvider defaultColorScheme="auto" theme={theme}>
-          <CookiesProvider defaultSetOptions={defaultSetOptions}>
-            <SWRConfig value={{ fetcher, errorRetryCount: 3 }}>
-              {children}
-            </SWRConfig>
-          </CookiesProvider>
+          <ModalsProvider>
+            <Notifications />
+            <CookiesProvider defaultSetOptions={defaultSetOptions}>
+              <SWRConfig value={{ fetcher, errorRetryCount: 3 }}>
+                {children}
+              </SWRConfig>
+            </CookiesProvider>
+          </ModalsProvider>
         </MantineProvider>
       </body>
     </html>
