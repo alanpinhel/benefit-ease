@@ -1,4 +1,3 @@
-import { benefits } from "@/mocks/handlers";
 import { server } from "@/mocks/node";
 import {
   createAuthEnvironment,
@@ -8,6 +7,7 @@ import {
   waitForElementToBeRemoved,
   within,
 } from "@/test-utils";
+import { benefits } from "@repo/mocks";
 import { http } from "msw";
 import HomePage from "./page";
 
@@ -72,6 +72,26 @@ test("shows add account button disabled when fetch error occurs", async () => {
   expect(button).toBeDisabled();
   await userEvent.hover(button);
   expect(await screen.findByText(/adição indisponível/i)).toBeInTheDocument();
+});
+
+test("add account when selecting available benefit", async () => {
+  render(<HomePage />);
+
+  await waitForElementToBeRemoved(() =>
+    screen.getByText(/carregando contas.../i)
+  );
+
+  userEvent.keyboard("A");
+
+  expect(await screen.findAllByRole("menuitem")).toHaveLength(1);
+
+  await userEvent.click(screen.getByRole("menuitem", { name: /🩺 saúde/i }));
+
+  const accountEl3 = screen.getByTestId("account-3");
+  expect(within(accountEl3).getByText("🩺")).toBeInTheDocument();
+  expect(within(accountEl3).getByText("R$ 0,00")).toBeInTheDocument();
+  expect(within(accountEl3).getByText("Saúde")).toBeInTheDocument();
+  expect(screen.getByText(/conta adicionada./i)).toBeInTheDocument();
 });
 
 // This test should be executed because it will log out the user
