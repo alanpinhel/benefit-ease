@@ -19,7 +19,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 
-function useDeleteAccount(id: number) {
+function useDeleteAccount(id: string) {
   const [isDeletingAccount, setDeletingAccount] = useState(false);
   const { accounts, mutate } = useAccounts();
   const router = useRouter();
@@ -55,9 +55,9 @@ function useDeleteAccount(id: number) {
 function AccountPage(): JSX.Element {
   const { id } = useParams<{ id: string }>();
   const { accounts, hasErrorAccounts, isLoadingAccounts } = useAccounts();
-  const { deleteAccount, isDeletingAccount } = useDeleteAccount(+id);
+  const { deleteAccount, isDeletingAccount } = useDeleteAccount(id);
   const theme = useMantineTheme();
-  const account = useMemo(() => accounts.find((a) => a.id === +id), [accounts]);
+  const account = useMemo(() => accounts.find((a) => a.id === id), [accounts]);
 
   const openDeleteModal = () =>
     modals.openConfirmModal({

@@ -1,4 +1,5 @@
 import "@testing-library/jest-dom";
+import crypto from "crypto";
 import "jest-date-mock";
 import { server } from "./mocks/node";
 
@@ -33,6 +34,12 @@ beforeAll(() => {
     configurable: true,
     enumerable: true,
     value: new URL(window.location.href),
+  });
+
+  Object.defineProperty(globalThis, "crypto", {
+    value: {
+      randomUUID: () => crypto.randomUUID(),
+    },
   });
 });
 

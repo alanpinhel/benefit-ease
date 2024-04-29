@@ -81,16 +81,15 @@ test("add account when selecting available benefit", async () => {
     screen.getByText(/carregando contas.../i)
   );
 
-  userEvent.keyboard("A");
+  await userEvent.keyboard("A");
 
   expect(await screen.findAllByRole("menuitem")).toHaveLength(1);
 
   await userEvent.click(screen.getByRole("menuitem", { name: /🩺 saúde/i }));
 
-  const accountEl3 = screen.getByTestId("account-3");
-  expect(within(accountEl3).getByText("🩺")).toBeInTheDocument();
-  expect(within(accountEl3).getByText("R$ 0,00")).toBeInTheDocument();
-  expect(within(accountEl3).getByText("Saúde")).toBeInTheDocument();
+  expect(screen.getByText("🩺")).toBeInTheDocument();
+  expect(screen.getByText("R$ 0,00")).toBeInTheDocument();
+  expect(screen.getByText("Saúde")).toBeInTheDocument();
   expect(screen.getByText(/conta adicionada./i)).toBeInTheDocument();
 });
 
