@@ -108,7 +108,7 @@ export function createAuthEnvironment() {
   beforeAll(() => {
     cookies.set("access_token", "access_token");
     cookies.set("refresh_token", "refresh_token");
-    cookies.set("user", { display_name: "John Doe" });
+    cookies.set("user", { display_name: "John Doe", id: "id" });
   });
   afterAll(() => {
     cookies.remove("access_token");

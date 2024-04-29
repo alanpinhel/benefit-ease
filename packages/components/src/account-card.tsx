@@ -1,17 +1,22 @@
 import {
+  ActionIcon,
+  ActionIconProps,
   Box,
   Card,
   CardProps,
+  Kbd,
   MantineGradient,
   Skeleton,
   SkeletonProps,
   Stack,
   Text,
+  VisuallyHidden,
   createPolymorphicComponent,
   getGradient,
   rem,
   useMantineTheme,
 } from "@mantine/core";
+import { IconCategoryPlus } from "@tabler/icons-react";
 import { forwardRef } from "react";
 
 export function AccountSkeletonCard(props: SkeletonProps) {
@@ -25,6 +30,35 @@ export function AccountSkeletonCard(props: SkeletonProps) {
     />
   );
 }
+
+export const AccountAddCard = createPolymorphicComponent<
+  "button",
+  ActionIconProps
+>(
+  forwardRef<HTMLButtonElement, ActionIconProps>((props, ref) => {
+    return (
+      <ActionIcon
+        variant="default"
+        h={132}
+        p={8}
+        pos="relative"
+        radius={12}
+        w={132}
+        {...props}
+        ref={ref}
+      >
+        <VisuallyHidden>Adicionar conta</VisuallyHidden>
+        <IconCategoryPlus
+          stroke={1.25}
+          style={{ width: rem(48), height: rem(48) }}
+        />
+        <Kbd pos="absolute" right={8} bottom={8}>
+          A
+        </Kbd>
+      </ActionIcon>
+    );
+  })
+);
 
 type AccountCardProps = {
   balance: React.ReactNode;

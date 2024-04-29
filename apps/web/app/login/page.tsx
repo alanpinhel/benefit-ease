@@ -25,6 +25,7 @@ export type SignInResponse = {
   access_token: string;
   refresh_token: string;
   user: {
+    id: string;
     email: string;
     user_metadata: {
       display_name: string;
@@ -53,6 +54,7 @@ function LoginPage() {
       setCookie("user", {
         email: data.user.email,
         display_name: data.user.user_metadata.display_name,
+        id: data.user.id,
       });
       setCookie("access_token", data.access_token);
       setCookie("refresh_token", data.refresh_token);
