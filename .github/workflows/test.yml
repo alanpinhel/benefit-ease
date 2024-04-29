@@ -7,6 +7,7 @@ on:
 env:
   NEXT_PUBLIC_ADMIN_URL: http://localhost:3001
   NEXT_PUBLIC_WEB_URL: http://localhost:3000
+  TZ: UTC
 
 jobs:
   test:

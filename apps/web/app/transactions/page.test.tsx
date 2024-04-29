@@ -51,7 +51,7 @@ test("only shows transactions with 'uber' in the name", async () => {
 });
 
 test("only shows today's transactions", async () => {
-  advanceTo(new Date("2024-04-22T09:00:00"));
+  advanceTo(new Date("2024-04-22T20:59:59-03:00"));
 
   render(<TransactionsPage />);
 
@@ -65,7 +65,7 @@ test("only shows today's transactions", async () => {
 });
 
 test("only shows transactions from yesterday", async () => {
-  advanceTo(new Date("2024-04-22T09:00:00"));
+  advanceTo(new Date("2024-04-22T20:59:59-03:00"));
 
   render(<TransactionsPage />);
 
@@ -79,7 +79,7 @@ test("only shows transactions from yesterday", async () => {
 });
 
 test("only shows transactions from 7 days ago", async () => {
-  advanceTo(new Date("2024-04-22T09:00:00"));
+  advanceTo(new Date("2024-04-22T20:59:59-03:00"));
 
   render(<TransactionsPage />);
 
@@ -93,7 +93,7 @@ test("only shows transactions from 7 days ago", async () => {
 });
 
 test("only shows transactions from 14 days ago", async () => {
-  advanceTo(new Date("2024-04-22T09:00:00"));
+  advanceTo(new Date("2024-04-22T20:59:59-03:00"));
 
   render(<TransactionsPage />);
 

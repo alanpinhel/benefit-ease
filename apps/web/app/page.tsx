@@ -1,6 +1,5 @@
 "use client";
 
-import { api } from "@/lib/api";
 import { Carousel } from "@mantine/carousel";
 import {
   Alert,
@@ -23,76 +22,16 @@ import {
   Header,
   withAuth,
 } from "@repo/components";
-import { useAccounts } from "@repo/hooks";
-import { Transaction } from "@repo/types";
+import { useAccounts, useTransactions } from "@repo/hooks";
 import { IconEye, IconEyeOff, IconSubtask } from "@tabler/icons-react";
 import { formatToBRL, formatToDateTime } from "brazilian-values";
 import Link from "next/link";
-import { useEffect, useReducer } from "react";
-
-type TransactionsState = {
-  transactions: Transaction[];
-  isError: boolean;
-  isLoading: boolean;
-};
-
-type TransactionsAction =
-  | { type: "start fetch transactions" }
-  | { type: "fail fetch transactions" }
-  | { type: "success fetch transactions"; transactions: Transaction[] };
-
-function transactionsReducer(
-  state: TransactionsState,
-  action: TransactionsAction
-) {
-  switch (action.type) {
-    case "start fetch transactions":
-      return { ...state, isLoading: true };
-    case "success fetch transactions":
-      return {
-        ...state,
-        transactions: action.transactions,
-        isLoading: false,
-        isError: false,
-      };
-    case "fail fetch transactions":
-      return { ...state, isLoading: false, isError: true };
-    default:
-      return state;
-  }
-}
 
 function HomePage(): JSX.Element {
   const { accounts, hasErrorAccounts, isLoadingAccounts } = useAccounts();
-  const [transactionsState, transactionsDispatch] = useReducer(
-    transactionsReducer,
-    {
-      transactions: [],
-      isError: false,
-      isLoading: false,
-    }
-  );
+  const { transactions, hasErrorTransactions, isLoadingTransactions } =
+    useTransactions("&limit=5");
   const [isHideValues, { toggle: toggleHideValues }] = useDisclosure(false);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    transactionsDispatch({ type: "start fetch transactions" });
-    api
-      .get(
-        `/rest/v1/transactions?select=id,name,created_at,amount,accounts(benefits(icon))&limit=5&order=created_at.desc`,
-        { signal: controller.signal }
-      )
-      .then(({ data: transactions }) => {
-        transactionsDispatch({
-          type: "success fetch transactions",
-          transactions,
-        });
-      })
-      .catch(() => {
-        transactionsDispatch({ type: "fail fetch transactions" });
-      });
-    return () => controller.abort();
-  }, []);
 
   return (
     <>
@@ -205,22 +144,24 @@ function HomePage(): JSX.Element {
               Ver mais
             </Anchor>
           </Group>
-          {transactionsState.isLoading ? (
+          {hasErrorTransactions ? (
+            <Alert radius="md" title="Erro no servidor 😢" variant="outline">
+              Ocorreu um erro ao buscar as transações.
+            </Alert>
+          ) : isLoadingTransactions ? (
             <Stack gap={8}>
               <VisuallyHidden>Carregando transações...</VisuallyHidden>
               {[...Array(5)].map((_, index) => (
                 <Skeleton height={28} key={index} radius={4} width="100%" />
               ))}
             </Stack>
-          ) : transactionsState.isError ? (
-            <Text>Erro ao carregar transações.</Text>
-          ) : transactionsState.transactions.length === 0 ? (
+          ) : transactions.length === 0 ? (
             <Alert radius="md" variant="light" color="gray">
               Não há transações recentes.
             </Alert>
           ) : (
             <Stack>
-              {transactionsState.transactions.map((transaction) => (
+              {transactions.map((transaction) => (
                 <Group
                   key={transaction.id}
                   data-testid={`transaction-${transaction.id}`}

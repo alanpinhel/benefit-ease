@@ -20,7 +20,7 @@ import {
   IconSearch,
 } from "@tabler/icons-react";
 import { formatToBRL, formatToDateTime } from "brazilian-values";
-import { subDays } from "date-fns";
+import { isAfter, isSameDay, subDays } from "date-fns";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -131,9 +131,9 @@ function TransactionsPage(): JSX.Element {
               if (!watch("period")) {
                 return true;
               }
-              return (
-                new Date(created_at) >= subDays(new Date(), +watch("period"))
-              );
+              const createdAt = new Date(created_at);
+              const limit = subDays(new Date(), +watch("period"));
+              return isSameDay(createdAt, limit) || isAfter(createdAt, limit);
             })
             .map((transaction) => (
               <Group
