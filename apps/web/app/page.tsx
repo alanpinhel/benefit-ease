@@ -4,11 +4,9 @@ import { Carousel } from "@mantine/carousel";
 import {
   Alert,
   Anchor,
-  Center,
   Flex,
   Group,
   Menu,
-  Skeleton,
   Stack,
   Text,
   Title,
@@ -20,6 +18,8 @@ import {
   AccountCard,
   AccountSkeletonCard,
   Header,
+  TransactionItem,
+  TransactionItemSkeleton,
   withAuth,
 } from "@repo/components";
 import { useAccounts, useTransactions } from "@repo/hooks";
@@ -149,10 +149,10 @@ function HomePage(): JSX.Element {
               Ocorreu um erro ao buscar as transações.
             </Alert>
           ) : isLoadingTransactions ? (
-            <Stack gap={8}>
+            <Stack>
               <VisuallyHidden>Carregando transações...</VisuallyHidden>
               {[...Array(5)].map((_, index) => (
-                <Skeleton height={28} key={index} radius={4} width="100%" />
+                <TransactionItemSkeleton key={index} />
               ))}
             </Stack>
           ) : transactions.length === 0 ? (
@@ -161,27 +161,15 @@ function HomePage(): JSX.Element {
             </Alert>
           ) : (
             <Stack>
-              {transactions.map((transaction) => (
-                <Group
+              {transactions.map(({ amount, created_at, ...transaction }) => (
+                <TransactionItem
                   key={transaction.id}
                   data-testid={`transaction-${transaction.id}`}
-                  justify="space-between"
-                >
-                  <Group gap={8}>
-                    <Center w={24} h={24}>
-                      <Text lh={1}>{transaction.accounts.benefits.icon}</Text>
-                    </Center>
-                    <Stack gap={0}>
-                      <Text fz="xs">{transaction.name}</Text>
-                      <Text fz="xs" c="dimmed">
-                        {formatToDateTime(new Date(transaction.created_at))}
-                      </Text>
-                    </Stack>
-                  </Group>
-                  <Text fz="xs" fw={600}>
-                    {isHideValues ? "🙈🙉🙊" : formatToBRL(transaction.amount)}
-                  </Text>
-                </Group>
+                  amount={isHideValues ? "🙈🙉🙊" : formatToBRL(amount)}
+                  createdAt={formatToDateTime(new Date(created_at))}
+                  icon={transaction.accounts.benefits.icon}
+                  name={transaction.name}
+                />
               ))}
             </Stack>
           )}

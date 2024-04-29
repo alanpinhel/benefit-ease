@@ -2,20 +2,24 @@
 
 import {
   ActionIcon,
-  Center,
+  Alert,
   Group,
   Indicator,
   Menu,
   MenuItemProps,
   Stack,
-  Text,
   TextInput,
   VisuallyHidden,
   alpha,
   createPolymorphicComponent,
   useComputedColorScheme,
 } from "@mantine/core";
-import { Header, withAuth } from "@repo/components";
+import {
+  Header,
+  TransactionItem,
+  TransactionItemSkeleton,
+  withAuth,
+} from "@repo/components";
 import { useTransactions } from "@repo/hooks";
 import { Transaction } from "@repo/types";
 import {
@@ -103,7 +107,8 @@ function TransactionsPage(): JSX.Element {
   const params = useSearchParams();
   const accountId = params.get("account_id");
   const accountFilter = accountId ? `&account_id=eq.${accountId}` : "";
-  const { transactions } = useTransactions(accountFilter);
+  const { transactions, hasErrorTransactions, isLoadingTransactions } =
+    useTransactions(accountFilter);
 
   return (
     <>
@@ -149,33 +154,38 @@ function TransactionsPage(): JSX.Element {
             </Menu.Dropdown>
           </Menu>
         </Group>
-        <Stack>
-          {transactions.map(
-            (t) =>
-              isShowTransaction(t, watch("search"), watch("period")) && (
-                <Group
-                  key={t.id}
-                  data-testid={`transaction-${t.id}`}
-                  justify="space-between"
-                >
-                  <Group gap={8}>
-                    <Center w={24} h={24}>
-                      <Text lh={1}>{t.accounts.benefits.icon}</Text>
-                    </Center>
-                    <Stack gap={0}>
-                      <Text fz="xs">{t.name}</Text>
-                      <Text fz="xs" c="dimmed">
-                        {formatToDateTime(new Date(t.created_at))}
-                      </Text>
-                    </Stack>
-                  </Group>
-                  <Text fz="xs" fw={600}>
-                    {formatToBRL(t.amount)}
-                  </Text>
-                </Group>
-              )
-          )}
-        </Stack>
+        {hasErrorTransactions ? (
+          <Alert radius="md" title="Erro no servidor 😢" variant="outline">
+            Ocorreu um erro ao buscar as transações.
+          </Alert>
+        ) : isLoadingTransactions ? (
+          <Stack>
+            <VisuallyHidden>Carregando transações...</VisuallyHidden>
+            {[...Array(5)].map((_, index) => (
+              <TransactionItemSkeleton key={index} />
+            ))}
+          </Stack>
+        ) : transactions.length === 0 ? (
+          <Alert radius="md" variant="light" color="gray">
+            Não há transações recentes.
+          </Alert>
+        ) : (
+          <Stack>
+            {transactions.map(
+              (t) =>
+                isShowTransaction(t, watch("search"), watch("period")) && (
+                  <TransactionItem
+                    key={t.id}
+                    data-testid={`transaction-${t.id}`}
+                    amount={formatToBRL(t.amount)}
+                    createdAt={formatToDateTime(new Date(t.created_at))}
+                    icon={t.accounts.benefits.icon}
+                    name={t.name}
+                  />
+                )
+            )}
+          </Stack>
+        )}
       </Stack>
     </>
   );
