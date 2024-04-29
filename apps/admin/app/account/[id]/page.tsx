@@ -2,7 +2,9 @@
 
 import { api } from "@/lib/api";
 import {
+  Alert,
   Container,
+  SimpleGrid,
   Skeleton,
   Stack,
   Text,
@@ -13,9 +15,15 @@ import {
 } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
-import { Header, withAuth } from "@repo/components";
-import { useAccounts } from "@repo/hooks";
+import {
+  Header,
+  TransactionItem,
+  TransactionItemSkeleton,
+  withAuth,
+} from "@repo/components";
+import { useAccounts, useTransactions } from "@repo/hooks";
 import { IconArrowLeft, IconTrash } from "@tabler/icons-react";
+import { formatToBRL, formatToDateTime } from "brazilian-values";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
@@ -59,6 +67,8 @@ function AccountPage(): JSX.Element {
   const { deleteAccount, isDeletingAccount } = useDeleteAccount(id);
   const theme = useMantineTheme();
   const account = useMemo(() => accounts.find((a) => a.id === id), [accounts]);
+  const { transactions, hasErrorTransactions, isLoadingTransactions } =
+    useTransactions(`&account_id=eq.${id}`);
 
   const openDeleteModal = () =>
     modals.openConfirmModal({
@@ -118,7 +128,7 @@ function AccountPage(): JSX.Element {
         </Header.ActionIcon>
       </Header>
       <Container component="main" px={24} pt={32} pb={48}>
-        <Stack align="flex-start">
+        <Stack>
           <Stack gap={0}>
             <Title order={2} fz={{ base: "h3", md: "h2" }}>
               Transações
@@ -127,6 +137,41 @@ function AccountPage(): JSX.Element {
               Simule movimentações.
             </Text>
           </Stack>
+          {hasErrorTransactions ? (
+            <Alert radius="md" title="Erro no servidor 😢" variant="outline">
+              Ocorreu um erro ao buscar as transações.
+            </Alert>
+          ) : isLoadingTransactions ? (
+            <SimpleGrid
+              cols={{ base: 1, sm: 2, md: 3 }}
+              spacing={{ base: 16, sm: 24, md: 32 }}
+            >
+              <VisuallyHidden>Carregando transações...</VisuallyHidden>
+              {[...Array(5)].map((_, index) => (
+                <TransactionItemSkeleton key={index} />
+              ))}
+            </SimpleGrid>
+          ) : transactions.length === 0 ? (
+            <Alert radius="md" variant="light" color="gray">
+              Não há transações recentes.
+            </Alert>
+          ) : (
+            <SimpleGrid
+              cols={{ base: 1, sm: 2, md: 3 }}
+              spacing={{ base: 16, sm: 24, md: 32 }}
+            >
+              {transactions.map((transaction) => (
+                <TransactionItem
+                  key={transaction.id}
+                  data-testid={`transaction-${transaction.id}`}
+                  amount={formatToBRL(transaction.amount)}
+                  createdAt={formatToDateTime(new Date(transaction.created_at))}
+                  icon={transaction.accounts.benefits.icon}
+                  name={transaction.name}
+                />
+              ))}
+            </SimpleGrid>
+          )}
         </Stack>
       </Container>
     </>
