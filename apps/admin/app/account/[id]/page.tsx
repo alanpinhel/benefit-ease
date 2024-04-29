@@ -3,6 +3,7 @@
 import { api } from "@/lib/api";
 import {
   Container,
+  Skeleton,
   Stack,
   Text,
   Title,
@@ -54,7 +55,7 @@ function useDeleteAccount(id: string) {
 
 function AccountPage(): JSX.Element {
   const { id } = useParams<{ id: string }>();
-  const { accounts, hasErrorAccounts, isLoadingAccounts } = useAccounts();
+  const { accounts, isLoadingAccounts } = useAccounts();
   const { deleteAccount, isDeletingAccount } = useDeleteAccount(id);
   const theme = useMantineTheme();
   const account = useMemo(() => accounts.find((a) => a.id === id), [accounts]);
@@ -72,16 +73,29 @@ function AccountPage(): JSX.Element {
       onConfirm: deleteAccount,
     });
 
-  if (hasErrorAccounts) {
-    return <>hasErrorAccounts</>;
-  }
-
   if (isLoadingAccounts) {
-    return <>isLoadingAccounts</>;
+    return (
+      <Header bg="transparent">
+        <VisuallyHidden>Carregando conta...</VisuallyHidden>
+        <Header.ActionIcon component={Link} href="/">
+          <IconArrowLeft stroke={1.25} />
+        </Header.ActionIcon>
+        <Skeleton height={24} width={160} radius="sm" />
+        <Header.ActionIcon style={{ visibility: "hidden" }} />
+      </Header>
+    );
   }
 
   if (!account) {
-    return <>!account</>;
+    return (
+      <Header>
+        <Header.ActionIcon component={Link} href="/">
+          <IconArrowLeft stroke={1.25} />
+        </Header.ActionIcon>
+        <Header.Title>Conta não encontrada</Header.Title>
+        <Header.ActionIcon style={{ visibility: "hidden" }} />
+      </Header>
+    );
   }
 
   const {
