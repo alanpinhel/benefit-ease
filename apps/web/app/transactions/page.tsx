@@ -1,18 +1,22 @@
 "use client";
 
-import { api } from "@/lib/api";
 import {
   ActionIcon,
   Center,
   Group,
+  Indicator,
   Menu,
+  MenuItemProps,
   Stack,
   Text,
   TextInput,
+  VisuallyHidden,
   alpha,
+  createPolymorphicComponent,
   useComputedColorScheme,
 } from "@mantine/core";
 import { Header, withAuth } from "@repo/components";
+import { useTransactions } from "@repo/hooks";
 import { Transaction } from "@repo/types";
 import {
   IconArrowLeft,
@@ -23,41 +27,83 @@ import { formatToBRL, formatToDateTime } from "brazilian-values";
 import { isAfter, isSameDay, subDays } from "date-fns";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { forwardRef } from "react";
 import { useForm } from "react-hook-form";
+
+type MyMenuItemProps = MenuItemProps & {
+  isActive: boolean;
+};
+
+const MenuItem = createPolymorphicComponent<"label", MyMenuItemProps>(
+  forwardRef<HTMLLabelElement, MyMenuItemProps>(
+    ({ children, isActive, ...rest }, ref) => {
+      const colorScheme = useComputedColorScheme();
+      const isDark = colorScheme === "dark";
+      const red9 = "var(--mantine-color-red-9)";
+      return (
+        <Menu.Item
+          component="label"
+          bg={isActive ? (isDark ? alpha(red9, 0.45) : "red.0") : undefined}
+          c={isActive ? (isDark ? "red.1" : "red.6") : undefined}
+          {...rest}
+          ref={ref}
+        >
+          {children}
+        </Menu.Item>
+      );
+    }
+  )
+);
+
+function escapeRegExp(text: string) {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+}
+
+function isTransactionContainsSearch({ name }: Transaction, search: string) {
+  if (!search) {
+    return true;
+  }
+  return new RegExp(escapeRegExp(search), "i").test(name);
+}
+
+function isTransactionInPeriod({ created_at }: Transaction, period: string) {
+  if (!period) {
+    return true;
+  }
+  const limit = subDays(new Date(), +period);
+  const createdAt = new Date(created_at);
+  return isSameDay(createdAt, limit) || isAfter(createdAt, limit);
+}
+
+function isShowTransaction(
+  transaction: Transaction,
+  search: string,
+  period: string
+) {
+  return (
+    isTransactionContainsSearch(transaction, search) &&
+    isTransactionInPeriod(transaction, period)
+  );
+}
+
+const periods = [
+  { label: "Hoje", value: "0" },
+  { label: "Ontem", value: "1" },
+  { label: "7 dias", value: "7" },
+  { label: "14 dias", value: "14" },
+];
 
 type FormData = {
   search: string;
   period: string;
 };
 
-function escapeRegExp(text: string) {
-  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-}
-
 function TransactionsPage(): JSX.Element {
   const { register, watch } = useForm<FormData>();
   const params = useSearchParams();
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const colorScheme = useComputedColorScheme();
-
   const accountId = params.get("account_id");
   const accountFilter = accountId ? `&account_id=eq.${accountId}` : "";
-
-  useEffect(() => {
-    const controller = new AbortController();
-    api
-      .get(
-        `/rest/v1/transactions?select=id,name,created_at,amount,accounts(benefits(icon))&order=created_at.desc${accountFilter}`,
-        {
-          signal: controller.signal,
-        }
-      )
-      .then(({ data: transactions }) => {
-        setTransactions(transactions);
-      });
-    return () => controller.abort();
-  }, []);
+  const { transactions } = useTransactions(accountFilter);
 
   return (
     <>
@@ -81,35 +127,16 @@ function TransactionsPage(): JSX.Element {
           />
           <Menu width={150} position="bottom-end" offset={2} radius={8}>
             <Menu.Target>
-              <ActionIcon variant="default" size="input-md" radius="md">
-                <IconCalendarEvent stroke={1.25} />
-              </ActionIcon>
+              <Indicator offset={4} disabled={!watch("period")}>
+                <ActionIcon variant="default" size="input-md" radius="md">
+                  <VisuallyHidden>Período</VisuallyHidden>
+                  <IconCalendarEvent stroke={1.25} />
+                </ActionIcon>
+              </Indicator>
             </Menu.Target>
             <Menu.Dropdown>
-              {[
-                { label: "Hoje", value: "0" },
-                { label: "Ontem", value: "1" },
-                { label: "7 dias", value: "7" },
-                { label: "14 dias", value: "14" },
-              ].map(({ label, value }) => (
-                <Menu.Item
-                  key={value}
-                  component="label"
-                  bg={
-                    watch("period") === value
-                      ? colorScheme === "dark"
-                        ? alpha("var(--mantine-color-red-9)", 0.45)
-                        : "red.0"
-                      : undefined
-                  }
-                  c={
-                    watch("period") === value
-                      ? colorScheme === "dark"
-                        ? "red.1"
-                        : "red.6"
-                      : undefined
-                  }
-                >
+              {periods.map(({ label, value }) => (
+                <MenuItem key={value} isActive={watch("period") === value}>
                   {label}
                   <input
                     hidden
@@ -117,46 +144,37 @@ function TransactionsPage(): JSX.Element {
                     value={watch("period") === value ? "" : value}
                     {...register("period")}
                   />
-                </Menu.Item>
+                </MenuItem>
               ))}
             </Menu.Dropdown>
           </Menu>
         </Group>
         <Stack>
-          {transactions
-            .filter(({ name }) =>
-              new RegExp(escapeRegExp(watch("search")), "i").test(name)
-            )
-            .filter(({ created_at }) => {
-              if (!watch("period")) {
-                return true;
-              }
-              const createdAt = new Date(created_at);
-              const limit = subDays(new Date(), +watch("period"));
-              return isSameDay(createdAt, limit) || isAfter(createdAt, limit);
-            })
-            .map((transaction) => (
-              <Group
-                key={transaction.id}
-                data-testid={`transaction-${transaction.id}`}
-                justify="space-between"
-              >
-                <Group gap={8}>
-                  <Center w={24} h={24}>
-                    <Text lh={1}>{transaction.accounts.benefits.icon}</Text>
-                  </Center>
-                  <Stack gap={0}>
-                    <Text fz="xs">{transaction.name}</Text>
-                    <Text fz="xs" c="dimmed">
-                      {formatToDateTime(new Date(transaction.created_at))}
-                    </Text>
-                  </Stack>
+          {transactions.map(
+            (t) =>
+              isShowTransaction(t, watch("search"), watch("period")) && (
+                <Group
+                  key={t.id}
+                  data-testid={`transaction-${t.id}`}
+                  justify="space-between"
+                >
+                  <Group gap={8}>
+                    <Center w={24} h={24}>
+                      <Text lh={1}>{t.accounts.benefits.icon}</Text>
+                    </Center>
+                    <Stack gap={0}>
+                      <Text fz="xs">{t.name}</Text>
+                      <Text fz="xs" c="dimmed">
+                        {formatToDateTime(new Date(t.created_at))}
+                      </Text>
+                    </Stack>
+                  </Group>
+                  <Text fz="xs" fw={600}>
+                    {formatToBRL(t.amount)}
+                  </Text>
                 </Group>
-                <Text fz="xs" fw={600}>
-                  {formatToBRL(transaction.amount)}
-                </Text>
-              </Group>
-            ))}
+              )
+          )}
         </Stack>
       </Stack>
     </>
