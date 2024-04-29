@@ -49,12 +49,14 @@ function useAddAccount() {
     async (benefit: Benefit) => {
       const accountsBackup = accounts;
       try {
+        const uuid = crypto.randomUUID();
         const newAccounts = [
           ...accounts,
-          { id: accounts.length + 1, balance: 0, benefits: benefit },
+          { id: uuid, balance: 0, benefits: benefit },
         ];
         mutate(newAccounts, { revalidate: false });
         await api.post("/rest/v1/accounts", {
+          id: uuid,
           user_id: user.id,
           balance: 0,
           benefit_id: benefit.id,
@@ -158,7 +160,6 @@ function HomePage(): JSX.Element {
                   <MenuDropdown>
                     {availableBenefits.map((b, i) => (
                       <Menu.Item
-                        onKeyDown={() => console.log("test")}
                         key={b.id}
                         leftSection={b.icon}
                         onClick={() => addAccount(b)}

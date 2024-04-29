@@ -1,7 +1,7 @@
 import { Benefit } from "./benefit";
 
 export type Account = {
-  id: number;
+  id: string;
   balance: number;
   benefits: Benefit;
 };
