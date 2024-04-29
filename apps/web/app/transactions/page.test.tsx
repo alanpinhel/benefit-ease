@@ -55,7 +55,7 @@ test("only shows today's transactions", async () => {
 
   render(<TransactionsPage />);
 
-  await userEvent.click(screen.getByRole("button", { expanded: false }));
+  await userEvent.click(screen.getByRole("button", { name: /período/i }));
   await userEvent.click(await screen.findByText("Hoje"));
 
   expect(screen.getByTestId("transaction-1")).toBeInTheDocument();
@@ -69,7 +69,7 @@ test("only shows transactions from yesterday", async () => {
 
   render(<TransactionsPage />);
 
-  await userEvent.click(screen.getByRole("button", { expanded: false }));
+  await userEvent.click(screen.getByRole("button", { name: /período/i }));
   await userEvent.click(await screen.findByText("Ontem"));
 
   expect(screen.getByTestId("transaction-1")).toBeInTheDocument();
@@ -83,7 +83,7 @@ test("only shows transactions from 7 days ago", async () => {
 
   render(<TransactionsPage />);
 
-  await userEvent.click(screen.getByRole("button", { expanded: false }));
+  await userEvent.click(screen.getByRole("button", { name: /período/i }));
   await userEvent.click(await screen.findByText("7 dias"));
 
   expect(screen.getByTestId("transaction-1")).toBeInTheDocument();
@@ -97,7 +97,7 @@ test("only shows transactions from 14 days ago", async () => {
 
   render(<TransactionsPage />);
 
-  await userEvent.click(screen.getByRole("button", { expanded: false }));
+  await userEvent.click(screen.getByRole("button", { name: /período/i }));
   await userEvent.click(await screen.findByText("14 dias"));
 
   expect(screen.getByTestId("transaction-1")).toBeInTheDocument();
