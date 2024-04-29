@@ -1,6 +1,5 @@
 import { SignInResponse } from "@/app/login/page";
-import { accounts, benefits, transactions } from "@repo/mocks";
-import { Account, Benefit } from "@repo/types";
+import { accounts, transactions } from "@repo/mocks";
 import { HttpResponse, RequestHandler, http } from "msw";
 
 export const handlers: RequestHandler[] = [
@@ -8,11 +7,7 @@ export const handlers: RequestHandler[] = [
     return HttpResponse.json({});
   }),
   http.put("*/auth/v1/user", () => {
-    return HttpResponse.json({
-      id: 3,
-      balance: 0,
-      benefits: benefits[2] as Benefit,
-    } satisfies Account);
+    return HttpResponse.json({});
   }),
   http.post("*/auth/v1/token", () => {
     return HttpResponse.json({
