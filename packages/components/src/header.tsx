@@ -14,7 +14,9 @@ import {
   TextProps,
   UnstyledButton,
   createPolymorphicComponent,
+  rem,
 } from "@mantine/core";
+import { IconLogout2, IconUser } from "@tabler/icons-react";
 import { forwardRef } from "react";
 import { useCookies } from "react-cookie";
 
@@ -39,7 +41,7 @@ const getGreeting = () => {
   return "Boa noite";
 };
 
-export function HeaderGreetings() {
+export function HeaderGreetings({ children }: { children: React.ReactNode }) {
   const [cookies, , removeCookie] = useCookies([
     "access_token",
     "user",
@@ -56,7 +58,7 @@ export function HeaderGreetings() {
 
   return (
     <Group gap={8}>
-      <Menu width={100} position="bottom-start" offset={2} radius={8}>
+      <Menu width={200} position="bottom-start" offset={2} radius={8}>
         <Menu.Target>
           <Avatar
             color="orange"
@@ -68,13 +70,34 @@ export function HeaderGreetings() {
           </Avatar>
         </Menu.Target>
         <Menu.Dropdown>
+          <Menu.Label>Contextos</Menu.Label>
+          {children}
+          <Menu.Divider />
+          <Menu.Label>Conta</Menu.Label>
           <Menu.Item
             component="a"
             href={`${process.env.NEXT_PUBLIC_WEB_URL}/profile`}
+            leftSection={
+              <IconUser
+                style={{ width: rem(16), height: rem(16) }}
+                stroke={1.25}
+              />
+            }
           >
             Perfil
           </Menu.Item>
-          <Menu.Item onClick={handleLogout}>Sair</Menu.Item>
+          <Menu.Item
+            color="red"
+            onClick={handleLogout}
+            leftSection={
+              <IconLogout2
+                style={{ width: rem(16), height: rem(16) }}
+                stroke={1.25}
+              />
+            }
+          >
+            Sair
+          </Menu.Item>
         </Menu.Dropdown>
       </Menu>
       <Stack gap={4}>

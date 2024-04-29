@@ -13,6 +13,7 @@ import {
   Title,
   Tooltip,
   VisuallyHidden,
+  rem,
 } from "@mantine/core";
 import { useHotkeys } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
@@ -21,11 +22,11 @@ import {
   AccountCard,
   AccountSkeletonCard,
   Header,
-  HeaderGreetings,
   withAuth,
 } from "@repo/components";
 import { useAccounts } from "@repo/hooks";
 import { Benefit } from "@repo/types";
+import { IconGraph } from "@tabler/icons-react";
 import { formatToBRL } from "brazilian-values";
 import Link from "next/link";
 import { useCallback, useMemo, useRef } from "react";
@@ -97,7 +98,20 @@ function HomePage(): JSX.Element {
   return (
     <>
       <Header>
-        <HeaderGreetings />
+        <Header.Greetings>
+          <Menu.Item
+            component="a"
+            href={`${process.env.NEXT_PUBLIC_WEB_URL}/`}
+            leftSection={
+              <IconGraph
+                style={{ width: rem(16), height: rem(16) }}
+                stroke={1.25}
+              />
+            }
+          >
+            Acompanhamento
+          </Menu.Item>
+        </Header.Greetings>
       </Header>
       <Container component="main" px={24} pt={32} pb={48}>
         <Stack align="flex-start">

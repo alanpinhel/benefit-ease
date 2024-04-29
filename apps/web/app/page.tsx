@@ -8,6 +8,7 @@ import {
   Center,
   Flex,
   Group,
+  Menu,
   Skeleton,
   Stack,
   Text,
@@ -24,7 +25,7 @@ import {
 } from "@repo/components";
 import { useAccounts } from "@repo/hooks";
 import { Transaction } from "@repo/types";
-import { IconEye, IconEyeOff } from "@tabler/icons-react";
+import { IconEye, IconEyeOff, IconSubtask } from "@tabler/icons-react";
 import { formatToBRL, formatToDateTime } from "brazilian-values";
 import Link from "next/link";
 import { useEffect, useReducer } from "react";
@@ -96,7 +97,20 @@ function HomePage(): JSX.Element {
   return (
     <>
       <Header>
-        <Header.Greetings />
+        <Header.Greetings>
+          <Menu.Item
+            component="a"
+            href={"/admin"}
+            leftSection={
+              <IconSubtask
+                style={{ width: rem(16), height: rem(16) }}
+                stroke={1.25}
+              />
+            }
+          >
+            Administração
+          </Menu.Item>
+        </Header.Greetings>
         <Header.ActionIcon onClick={toggleHideValues}>
           {isHideValues ? (
             <>
