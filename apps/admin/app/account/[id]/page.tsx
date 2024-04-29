@@ -14,8 +14,9 @@ import {
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import { Header, withAuth } from "@repo/components";
-import { useAccounts } from "@repo/hooks";
+import { useAccounts, useTransactions } from "@repo/hooks";
 import { IconArrowLeft, IconTrash } from "@tabler/icons-react";
+import { formatToBRL, formatToDateTime } from "brazilian-values";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
@@ -59,6 +60,7 @@ function AccountPage(): JSX.Element {
   const { deleteAccount, isDeletingAccount } = useDeleteAccount(id);
   const theme = useMantineTheme();
   const account = useMemo(() => accounts.find((a) => a.id === id), [accounts]);
+  const { transactions } = useTransactions(`&account_id=eq.${id}`);
 
   const openDeleteModal = () =>
     modals.openConfirmModal({
@@ -126,6 +128,18 @@ function AccountPage(): JSX.Element {
             <Text fz={{ md: "lg" }} c="dimmed">
               Simule movimentações.
             </Text>
+            {transactions.map((transaction) => (
+              <div
+                key={transaction.id}
+                data-testid={`transaction-${transaction.id}`}
+              >
+                <span>{transaction.name}</span>
+                <span>
+                  {formatToDateTime(new Date(transaction.created_at))}
+                </span>
+                <span>{formatToBRL(transaction.amount)}</span>
+              </div>
+            ))}
           </Stack>
         </Stack>
       </Container>
