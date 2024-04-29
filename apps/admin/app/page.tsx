@@ -1,10 +1,12 @@
 "use client";
 
+import { api } from "@/lib/api";
 import {
   Alert,
   Container,
-  Group,
+  Flex,
   Menu,
+  MenuDropdown,
   SimpleGrid,
   Stack,
   Text,
@@ -12,7 +14,10 @@ import {
   Tooltip,
   VisuallyHidden,
 } from "@mantine/core";
+import { useHotkeys } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
 import {
+  AccountAddCard,
   AccountCard,
   AccountSkeletonCard,
   Header,
@@ -20,20 +25,15 @@ import {
   withAuth,
 } from "@repo/components";
 import { useAccounts } from "@repo/hooks";
+import { Benefit } from "@repo/types";
 import { formatToBRL } from "brazilian-values";
-import { useMemo } from "react";
+import Link from "next/link";
+import { useCallback, useMemo, useRef } from "react";
+import { useCookies } from "react-cookie";
 import useSWRImmutable from "swr/immutable";
 
-export type Benefit = {
-  id: number;
-  name: string;
-  icon: string;
-};
-
 function useBenefits() {
-  const response = useSWRImmutable<Benefit[]>(
-    "/rest/v1/benefits?select=id,name,icon"
-  );
+  const response = useSWRImmutable<Benefit[]>("/rest/v1/benefits?select=*");
   return {
     benefits: response.data || [],
     hasErrorBenefits: !!response.error,
@@ -41,14 +41,56 @@ function useBenefits() {
   };
 }
 
+function useAddAccount() {
+  const { accounts, mutate } = useAccounts();
+  const [{ user }] = useCookies(["user"]);
+
+  const addAccount = useCallback(
+    async (benefit: Benefit) => {
+      const accountsBackup = accounts;
+      try {
+        const newAccounts = [
+          ...accounts,
+          { id: accounts.length + 1, balance: 0, benefits: benefit },
+        ];
+        mutate(newAccounts, { revalidate: false });
+        await api.post("/rest/v1/accounts", {
+          user_id: user.id,
+          balance: 0,
+          benefit_id: benefit.id,
+        });
+        notifications.show({
+          color: "green",
+          message: "Conta adicionada com sucesso.",
+          title: "Sucesso! 🎉",
+        });
+      } catch (error) {
+        mutate(accountsBackup, { revalidate: false });
+        notifications.show({
+          color: "orange",
+          message: "Ocorreu um erro ao adicionar a conta.",
+          title: "Erro no servidor 😢",
+        });
+      }
+    },
+    [accounts]
+  );
+
+  return addAccount;
+}
+
 function HomePage(): JSX.Element {
   const { accounts, hasErrorAccounts, isLoadingAccounts } = useAccounts();
   const { benefits, hasErrorBenefits, isLoadingBenefits } = useBenefits();
+  const addAccount = useAddAccount();
+  const addButtonRef = useRef<HTMLButtonElement>(null);
 
   const availableBenefits = useMemo(
     () => benefits.filter((b) => !accounts.some((a) => a.benefits.id === b.id)),
     [accounts, benefits]
   );
+
+  useHotkeys([["A", () => addButtonRef.current?.click()]], []);
 
   return (
     <>
@@ -70,12 +112,12 @@ function HomePage(): JSX.Element {
               Ocorreu um erro ao buscar as contas de benefício.
             </Alert>
           ) : isLoadingAccounts ? (
-            <Group gap={8} wrap="nowrap" style={{ overflow: "hidden" }}>
+            <Flex gap={{ base: 8, xs: 16, md: 24 }} wrap="wrap">
               <VisuallyHidden>Carregando contas...</VisuallyHidden>
               {[...Array(3)].map((_, i) => (
                 <AccountSkeletonCard key={i} />
               ))}
-            </Group>
+            </Flex>
           ) : (
             <SimpleGrid
               cols={{ base: 2, xs: 3, sm: 4, md: 6 }}
@@ -83,18 +125,20 @@ function HomePage(): JSX.Element {
             >
               {accounts.map(({ balance, ...account }, index) => (
                 <AccountCard
-                  key={index}
+                  balance={formatToBRL(balance)}
+                  component={Link}
                   data-testid={`account-${account.id}`}
                   from={account.benefits.color_from}
-                  to={account.benefits.color_to}
+                  href={`/account/${account.id}`}
                   icon={account.benefits.icon}
+                  key={index}
                   name={account.benefits.name}
-                  balance={formatToBRL(balance)}
+                  to={account.benefits.color_to}
                 />
               ))}
               {hasErrorBenefits ? (
                 <Tooltip withArrow label="Adição indisponível">
-                  <button disabled>Adicionar conta</button>
+                  <AccountAddCard disabled ref={addButtonRef} />
                 </Tooltip>
               ) : isLoadingBenefits ? (
                 <div>
@@ -102,13 +146,27 @@ function HomePage(): JSX.Element {
                   <AccountSkeletonCard />
                 </div>
               ) : availableBenefits.length > 0 ? (
-                <Menu>
+                <Menu
+                  width={180}
+                  position="right-start"
+                  offset={{ mainAxis: -124, alignmentAxis: 8 }}
+                  radius={8}
+                >
                   <Menu.Target>
-                    <button>Adicionar conta</button>
+                    <AccountAddCard ref={addButtonRef} />
                   </Menu.Target>
-                  {availableBenefits.map((b) => (
-                    <Menu.Item key={0}>{`${b.icon} ${b.name}`}</Menu.Item>
-                  ))}
+                  <MenuDropdown>
+                    {availableBenefits.map((b, i) => (
+                      <Menu.Item
+                        onKeyDown={() => console.log("test")}
+                        key={b.id}
+                        leftSection={b.icon}
+                        onClick={() => addAccount(b)}
+                      >
+                        {b.name}
+                      </Menu.Item>
+                    ))}
+                  </MenuDropdown>
                 </Menu>
               ) : null}
             </SimpleGrid>
